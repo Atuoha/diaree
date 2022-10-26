@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "153175417813",
+    "project_id": "diaree-4f926",
+    "storage_bucket": "diaree-4f926.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153175417813:android:43f6fcbb735a5d22e6d35c",
+        "android_client_info": {
+          "package_name": "com.example.diaree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "153175417813-eqa2akl06ike61q168bjhi4pit1hq1gu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCYv3LC7g0yVvd8e5Ph0aE8gbW2Pzn2nM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153175417813-eqa2akl06ike61q168bjhi4pit1hq1gu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

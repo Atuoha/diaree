@@ -36,6 +36,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  flutter_launcher_icons: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +48,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#EE3A46"
+  adaptive_icon_foreground: "assets/images/logo.png"
+
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -60,9 +71,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+assets:
+  - assets/images/
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -75,17 +86,18 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+fonts:
+  - family: Poppins
+    fonts:
+     - asset: assets/fonts/Poppins-Regular.ttf
+     - asset: assets/fonts/Poppins-Bold.ttf
+       weight: 800
+     - asset: assets/fonts/Poppins-Medium.ttf
+       weight: 700
+     - asset: assets/fonts/Poppins-Light.ttf
+       weight: 400
+
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

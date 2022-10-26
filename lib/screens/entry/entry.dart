@@ -1,13 +1,14 @@
 import "package:flutter/material.dart";
 
+class EntryScreen extends StatelessWidget {
+  const EntryScreen({super.key});
 
-class EntryScreen extends StatelessWidget{
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: []
-      )
+      body: Center(
+        child: Image.asset('assets/images/logo.png'),
+      ),
     );
   }
 }
