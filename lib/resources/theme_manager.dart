@@ -105,7 +105,7 @@ ThemeData getAppTheme() {
 
     // text theme
     textTheme: TextTheme(
-      headline1: getSemiBoldStyle(
+      headline1: getMediumStyle(
         color: Colors.black,
         fontSize: FontSize.s16,
       ),
