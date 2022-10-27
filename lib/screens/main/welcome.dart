@@ -1,27 +1,37 @@
+import 'package:diaree/resources/route_manager.dart';
+import 'package:diaree/screens/authentication/auth.dart';
 import "package:flutter/material.dart";
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
-import '../../resources/values_manager.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
   // navigate to registration
   void _navigateToSignup() {
-    // Todo: Implement Navigate to signup
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => AuthenticationScreen(isSignin: false),
+      ),
+    );
   }
 
   // navigate to sign in
   void _navigateToSignin() {
-    // Todo: Implement Navigate to signin
+    Navigator.of(context).pushReplacementNamed(RouteManager.authScreen);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -49,19 +59,21 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical:8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 8),
                     ),
                     onPressed: () => _navigateToSignin(),
                     child: const Text('Create Account'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 74, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 74, vertical: 8),
                     ),
                     onPressed: () => _navigateToSignin(),
                     child: const Text('Sign in'),
                   ),
-                  const SizedBox(height:5),
+                  const SizedBox(height: 5),
                   Text(
                     'Continue without signing up',
                     style: getRegularStyle(
