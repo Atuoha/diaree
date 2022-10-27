@@ -43,40 +43,21 @@ ThemeData getAppTheme() {
 
     // input decoration theme
     inputDecorationTheme: InputDecorationTheme(
+      fillColor: textBoxLite,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(
-          color: Colors.grey,
-          width: AppSize.s2,
-        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(
-          color: Colors.grey,
-          width: AppSize.s2,
-        ),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(
-          color: Colors.red,
-          width: AppSize.s2,
-        ),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(
-          color: Colors.red,
-          width: AppSize.s2,
-        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(
-          color: primaryColor,
-          width: AppSize.s2,
-        ),
       ),
       labelStyle: getMediumStyle(color: Colors.black),
       hintStyle: getRegularStyle(color: Colors.grey),
