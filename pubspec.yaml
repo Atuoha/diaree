@@ -37,6 +37,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   flutter_launcher_icons: ^0.10.0
+  is_first_run: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -71,8 +72,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-assets:
-  - assets/images/
+  assets:
+    - assets/images/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -86,16 +87,16 @@ assets:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-fonts:
+  fonts:
   - family: Poppins
     fonts:
-     - asset: assets/fonts/Poppins-Regular.ttf
-     - asset: assets/fonts/Poppins-Bold.ttf
-       weight: 800
-     - asset: assets/fonts/Poppins-Medium.ttf
-       weight: 700
-     - asset: assets/fonts/Poppins-Light.ttf
-       weight: 400
+      - asset: assets/fonts/Poppins-Regular.ttf
+      - asset: assets/fonts/Poppins-Bold.ttf
+        weight: 800
+      - asset: assets/fonts/Poppins-Medium.ttf
+        weight: 700
+      - asset: assets/fonts/Poppins-Light.ttf
+        weight: 400
 
 
   #
