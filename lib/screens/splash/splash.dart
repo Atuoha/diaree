@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
     var page = currentSplashIndex + 1;
     _pageController.animateToPage(
       page,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       curve: Curves.easeIn,
     );
   }
