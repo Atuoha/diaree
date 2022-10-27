@@ -16,15 +16,26 @@ TextStyle _getTextStyle(
 }
 
 // regular fontstyle
-TextStyle getRegularStyle(
-    {fontSize = FontSize.s12,
-    required Color color,
-    fontWeight = FontWeightManager.normal,}) {
+TextStyle getRegularStyle({
+  fontSize = FontSize.s14,
+  required Color color,
+  fontWeight = FontWeightManager.normal,
+}) {
   return _getTextStyle(
     fontSize,
     FontConstants.fontFamily,
     color,
     fontWeight,
+
+  );
+}
+
+TextStyle getHeadingStyle({fontSize = FontSize.s40}){
+  return  TextStyle(
+    fontWeight: FontWeightManager.bold,
+    height: 0.8,
+    fontSize:fontSize,
+    color: Colors.black,
   );
 }
 
@@ -51,19 +62,6 @@ TextStyle getBoldStyle({
     FontConstants.fontFamily,
     color,
     FontWeightManager.bold,
-  );
-}
-
-// semi-bold fontstyle
-TextStyle getSemiBoldStyle({
-  fontSize = FontSize.s12,
-  required Color color,
-}) {
-  return _getTextStyle(
-    fontSize,
-    FontConstants.fontFamily,
-    color,
-    FontWeightManager.semiBold,
   );
 }
 

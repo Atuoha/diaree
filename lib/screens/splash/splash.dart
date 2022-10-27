@@ -1,8 +1,11 @@
+import 'package:diaree/resources/route_manager.dart';
 import "package:flutter/material.dart";
 import '../../constants/color.dart';
 import '../../models/splash_item.dart';
 import '../../resources/assets_manager.dart';
+import '../../resources/font_manager.dart';
 import '../../resources/string_manager.dart';
+import '../../resources/styles_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -38,15 +41,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // navigate to main screen
   void _navigateToMain() {
-    Navigator.of(context).pushReplacementNamed("");
+    Navigator.of(context).pushReplacementNamed(RouteManager.welcomeScreen);
   }
 
   Widget kSplashPageIndicator(int index) {
     return Container(
-      margin: const EdgeInsets.all(10),
-      width:50,
+      margin: const EdgeInsets.all(2),
+      width: 50,
       decoration: BoxDecoration(
-        color: currentSplashIndex == index ? primaryColor : grey,
+        color: currentSplashIndex == index ? primaryColor : greyShade,
       ),
     );
   }
@@ -73,7 +76,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: PageView.builder(
           controller: _pageController,
           onPageChanged: (value) {
@@ -89,14 +92,28 @@ class _SplashScreenState extends State<SplashScreen> {
               Image.asset(splashItems[currentSplashIndex].imgAsset),
               const SizedBox(height: 10),
               SizedBox(
-                height: 22,
+                height: 6,
                 child: ListView.builder(
-                scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.horizontal,
                   itemCount: splashItems.length,
                   itemBuilder: (context, index) => kSplashPageIndicator(index),
                 ),
               ),
+              const SizedBox(height: 15),
+              Text(
+                splashItems[currentSplashIndex].title,
+                style: getHeadingStyle()
+              ),
               const SizedBox(height: 10),
+              Text(
+                splashItems[currentSplashIndex].subtitle,
+                style: getRegularStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeightManager.normal,
+                  fontSize: FontSize.s13,
+                ),
+              ),
+              const SizedBox(height: 20),
               currentSplashIndex != splashItems.length - 1
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,14 +137,14 @@ class _SplashScreenState extends State<SplashScreen> {
                       ],
                     )
                   : Center(
-                    child: ElevatedButton(
+                      child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 60),
                         ),
                         onPressed: () => _navigateToMain(),
                         child: const Text('Let\'s Go!'),
                       ),
-                  ),
+                    ),
             ],
           ),
         ),

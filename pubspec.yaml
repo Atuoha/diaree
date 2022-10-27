@@ -91,12 +91,13 @@ flutter:
   - family: Poppins
     fonts:
       - asset: assets/fonts/Poppins-Regular.ttf
+        weight: 500
       - asset: assets/fonts/Poppins-Bold.ttf
         weight: 800
       - asset: assets/fonts/Poppins-Medium.ttf
-        weight: 700
+        weight: 600
       - asset: assets/fonts/Poppins-Light.ttf
-        weight: 400
+        weight: 300
 
 
   #
