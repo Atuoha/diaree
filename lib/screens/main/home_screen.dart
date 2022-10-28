@@ -33,6 +33,84 @@ class HomeScreen extends StatelessWidget {
       //Todo: Implement navigation
     }
 
+    // view entry
+    void viewEntry() {
+      // Todo: Implement view entry
+    }
+
+    // delete entry
+    void deleteEntry() {
+      // Todo: Implement delete entry
+    }
+
+    // edit entry
+    void editEntry() {
+      // Todo: Implement edit entry
+    }
+
+    // show options
+    void showOptions() {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton.icon(
+                onPressed: () => viewEntry(),
+                icon: const Icon(
+                  Icons.visibility,
+                  color: Colors.black,
+                  size: AppSize.s25,
+                ),
+                label: Text(
+                  'View Entry',
+                  style: getRegularStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeightManager.bold,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => editEntry(),
+                icon: const Icon(
+                  Icons.edit,
+                  color: Colors.black,
+                  size: AppSize.s25,
+                ),
+                label: Text(
+                  'Edit Entry',
+                  style: getRegularStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeightManager.bold,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => deleteEntry(),
+                icon: const Icon(
+                  Icons.delete,
+                  color: primaryColor,
+                  size: AppSize.s25,
+                ),
+                label: Text(
+                  'Delete Entry',
+                  style: getRegularStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeightManager.bold,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
@@ -108,52 +186,54 @@ class HomeScreen extends StatelessWidget {
             Expanded(
                 // height:300,
                 child: ListView(
-
               children: List.generate(
                 99,
                 (index) => Padding(
-                  padding: const EdgeInsets.only(bottom:18.0),
+                  padding: const EdgeInsets.only(bottom: 18.0),
                   child: SizedBox(
                     height: size.height * 0.15,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Summer Vacation!',
-                                  style: getBoldStyle(
-                                      color: Colors.black,
-                                      fontSize: FontSize.s16),
-                                ),
-                                SizedBox(
-                                  width: size.width / 1.52,
-                                  child: Text(
-                                    'Today, my summer holidays have begun. I have some plans for sum...',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.justify,
-                                    style: getRegularStyle(
-                                      color: Colors.black,
+                    child: GestureDetector(
+                      onTap: () => showOptions(),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Summer Vacation!',
+                                    style: getBoldStyle(
+                                        color: Colors.black,
+                                        fontSize: FontSize.s16),
+                                  ),
+                                  SizedBox(
+                                    width: size.width / 1.52,
+                                    child: Text(
+                                      'Today, my summer holidays have begun. I have some plans for sum...',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.justify,
+                                      style: getRegularStyle(
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  '17th April 2002',
-                                  style: getRegularStyle(
-                                    color: greyShade2,
-                                    fontWeight: FontWeightManager.medium,
-                                    fontSize: FontSize.s12,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    '17th April 2002',
+                                    style: getRegularStyle(
+                                      color: greyShade2,
+                                      fontWeight: FontWeightManager.medium,
+                                      fontSize: FontSize.s12,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Image.asset(AssetManager.happy)
-                          ],
+                                ],
+                              ),
+                              Image.asset(AssetManager.happy)
+                            ],
+                          ),
                         ),
                       ),
                     ),
