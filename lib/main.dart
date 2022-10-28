@@ -1,9 +1,18 @@
 import 'package:diaree/resources/route_manager.dart';
 import 'package:diaree/resources/theme_manager.dart';
 import 'package:diaree/screens/entry/entry.dart';
+import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 
-void main() => runApp(const Diaree());
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FirebaseApp app = await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const Diaree());
+}
 
 class Diaree extends StatelessWidget {
   const Diaree({super.key});

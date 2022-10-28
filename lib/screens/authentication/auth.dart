@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../components/loading.dart';
 import '../../constants/color.dart';
@@ -171,38 +173,140 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     });
   }
 
+  // snackbar for error message
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: primaryColor,
+      action: SnackBarAction(
+        onPressed: () => Navigator.of(context).pop(),
+        label: 'Dismiss',
+        textColor: Colors.white,
+      ),
+    ));
+  }
+
   // authenticate
-  void _authenticate() {
+  Future<void> _authenticate() async {
     FocusScope.of(context).unfocus();
     var valid = _formKey.currentState!.validate();
     _formKey.currentState!.save();
     if (!valid) return;
 
-    if (widget.isSignin) {
-      // authenticate signin
-      firebaseAuth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      loadingFnc();
-    } else {
-      // authenticate signup
-      firebaseAuth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      firebase.collection("users").doc().set({
-        "Username": _nameController.text.trim(),
-        "Email": _emailController.text.trim(),
-        "Avatar": "None",
-        "Pin": ""
+    try {
+      if (widget.isSignin) {
+        // authenticate signin
+        await firebaseAuth
+            .signInWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim(),
+            )
+            .then((value) => loadingFnc());
+      } else {
+        // authenticate signup
+        var credential = await firebaseAuth.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        firebase.collection("users").doc(credential.user!.uid).set({
+          "username": _nameController.text.trim(),
+          "email": _emailController.text.trim(),
+          "avatar": "None",
+          "pin": "",
+          'auth-type': 'email',
+        }).then((value) => loadingFnc());
+      }
+    } on FirebaseAuthException catch (e) {
+      var error = 'An error occurred. Check credentials!';
+      if (e.message != null) {
+        if (e.code == 'user-not-found') {
+          error = "Email not recognised!";
+        } else if (e.code == 'account-exists-with-different-credential') {
+          error = "Email already in use!";
+        } else if (e.code == 'wrong-password') {
+          error = 'Email or Password Incorrect!';
+        } else if (e.code == 'network-request-failed') {
+          error = 'Network error!';
+        } else {
+          error = e.code;
+        }
+      }
+
+      showSnackBar(error); // showSnackBar will show error if any
+      setState(() {
+        isLoading = false;
       });
-      loadingFnc();
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
   // authenticate using google
-  void _googleAuthenticate() {}
+  Future<void> _googleAuthenticate() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    try {
+      // send username, email, and phone number to firestore
+      var logCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(logCredential.user!.uid)
+          .set(
+        {
+          "username": googleUser!.displayName,
+          "email": googleUser.email,
+          "avatar": googleUser.photoUrl,
+          "pin": "",
+          'auth-type': 'email',
+        },
+      ).then((value) {
+        loadingFnc();
+      });
+    } on FirebaseAuthException catch (e) {
+      var error = 'An error occurred. Check credentials!';
+      if (e.message != null) {
+        if (e.code == 'user-not-found') {
+          error = "Email not recognised!";
+        } else if (e.code == 'account-exists-with-different-credential') {
+          error = "Email already in use!";
+        } else if (e.code == 'wrong-password') {
+          error = 'Email or Password Incorrect!';
+        } else if (e.code == 'network-request-failed') {
+          error = 'Network error!';
+        } else {
+          error = e.code;
+        }
+      }
+
+      showSnackBar(error); // showSnackBar will show error if any
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
