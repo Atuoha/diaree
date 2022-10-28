@@ -8,6 +8,7 @@ class FontWeightManager {
   static const FontWeight light = FontWeight.w300;
   static const FontWeight normal = FontWeight.w500;
   static const FontWeight bold = FontWeight.w800;
+  static const FontWeight extraBold = FontWeight.w900;
   static const FontWeight medium = FontWeight.w600;
 }
 

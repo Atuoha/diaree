@@ -1,8 +1,14 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 
+import '../../components/loading.dart';
 import '../../constants/color.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
+import '../../resources/route_manager.dart';
 import '../../resources/styles_manager.dart';
 
 // ignore: must_be_immutable
@@ -29,8 +35,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool isObscure = true;
-
   bool isButtonDisabled = true;
+  bool isLoading = false;
+
+  final firebase = FirebaseFirestore.instance;
+  final firebaseAuth = FirebaseAuth.instance;
 
   // toggle auth
   void _toggleAuth() {
@@ -40,7 +49,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   // navigate to forgotten password
-  void _navigateToForgottenPassword() {}
+  void _navigateToForgottenPassword() {
+    Navigator.of(context).pushNamed(RouteManager.forgotPasswordScreen);
+  }
 
   @override
   void initState() {
@@ -74,7 +85,15 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   void didChangeDependencies() {
-    checkEntries();
+    _emailController.addListener(() {
+      checkEntries();
+    });
+    _passwordController.addListener(() {
+      checkEntries();
+    });
+    _nameController.addListener(() {
+      checkEntries();
+    });
     super.didChangeDependencies();
   }
 
@@ -84,6 +103,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     Field field,
     TextEditingController controller,
     bool obscureValue,
+    bool isObscured,
   ) {
     return TextFormField(
       obscureText: obscureValue,
@@ -118,7 +138,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       decoration: InputDecoration(
         hintText: hint,
         label: Text(label),
-        suffixIcon: obscureValue
+        suffixIcon: isObscured
             ? _passwordController.text.isNotEmpty
                 ? GestureDetector(
                     onTap: () => setState(() {
@@ -135,8 +155,51 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     );
   }
 
+  // loading
+  void loadingFnc() {
+    setState(() {
+      isLoading = true;
+    });
+
+    Timer(const Duration(seconds: 4), () {
+      if (widget.isSignin) {
+        // TODO: Home screen routeName
+        Navigator.of(context).pushReplacementNamed("");
+      }
+      Navigator.of(context)
+          .pushReplacementNamed(RouteManager.signupAcknowledgeScreen);
+    });
+  }
+
   // authenticate
-  void _authenticate() {}
+  void _authenticate() {
+    FocusScope.of(context).unfocus();
+    var valid = _formKey.currentState!.validate();
+    _formKey.currentState!.save();
+    if (!valid) return;
+
+    if (widget.isSignin) {
+      // authenticate signin
+      firebaseAuth.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      loadingFnc();
+    } else {
+      // authenticate signup
+      firebaseAuth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      firebase.collection("users").doc().set({
+        "Username": _nameController.text.trim(),
+        "Email": _emailController.text.trim(),
+        "Avatar": "None",
+        "Pin": ""
+      });
+      loadingFnc();
+    }
+  }
 
   // authenticate using google
   void _googleAuthenticate() {}
@@ -161,105 +224,115 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       style: getHeadingStyle(fontSize: FontSize.s30),
                     ),
                     const SizedBox(height: 40),
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          !widget.isSignin
-                              ? kTextField(
-                                  'Ujunwa Peace',
-                                  'Name',
-                                  Field.name,
-                                  _nameController,
+                    !isLoading
+                        ? Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                !widget.isSignin
+                                    ? kTextField(
+                                        'Ujunwa Peace',
+                                        'Name',
+                                        Field.name,
+                                        _nameController,
+                                        false,
+                                        false,
+                                      )
+                                    : const SizedBox.shrink(),
+                                const SizedBox(height: 10),
+                                kTextField(
+                                  'ujunwa0001@gmail.com',
+                                  'Email Address',
+                                  Field.email,
+                                  _emailController,
                                   false,
+                                  false,
+                                ),
+                                const SizedBox(height: 10),
+                                kTextField(
+                                  '*********',
+                                  'Password',
+                                  Field.password,
+                                  _passwordController,
+                                  isObscure,
+                                  true,
+                                ),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 74,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  onPressed: isButtonDisabled
+                                      ? null
+                                      : () => _authenticate(),
+                                  child: Text(
+                                    widget.isSignin ? 'Signin' : 'Signup',
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 13,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  onPressed: () => _googleAuthenticate(),
+                                  child: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        AssetManager.googleImage,
+                                        width: 15,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        widget.isSignin
+                                            ? 'Signin with google'
+                                            : 'Signup with google',
+                                        style:
+                                            const TextStyle(color: Colors.blue),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          _navigateToForgottenPassword(),
+                                      child: const Text(
+                                        'Forgotten Password',
+                                        style: TextStyle(
+                                          color: primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => _toggleAuth(),
+                                      child: Text(
+                                        widget.isSignin
+                                            ? 'New here? Signup'
+                                            : 'Own an account? Signin',
+                                        style: const TextStyle(
+                                          color: primaryColor,
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 )
-                              : const SizedBox.shrink(),
-                          const SizedBox(height: 10),
-                          kTextField(
-                            'ujunwa0001@gmail.com',
-                            'Email Address',
-                            Field.email,
-                            _emailController,
-                            false,
-                          ),
-                          const SizedBox(height: 10),
-                          kTextField(
-                            '*********',
-                            'Password',
-                            Field.password,
-                            _passwordController,
-                            isObscure,
-                          ),
-                        ],
-                      ),
-                    )
+                              ],
+                            ),
+                          )
+                        : const Loading()
                   ],
                 ),
-
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 74,
-                      vertical: 8,
-                    ),
-                  ),
-                  onPressed: isButtonDisabled ? null : () => _authenticate(),
-                  child: Text(
-                    widget.isSignin ? 'Signin' : 'Signup',
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 8,
-                    ),
-                  ),
-                  onPressed: () => _googleAuthenticate(),
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Image.asset(
-                        AssetManager.googleImage,
-                        width: 15,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        widget.isSignin
-                            ? 'Signin with google'
-                            : 'Signup with google',
-                        style: const TextStyle(color: Colors.blue),
-                      ),
-                    ],
-                  ),
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => _navigateToForgottenPassword(),
-                      child: const Text(
-                        'Forgotten Password',
-                        style: TextStyle(
-                          color: primaryColor,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => _toggleAuth(),
-                      child: Text(
-                        widget.isSignin
-                            ? 'New here? Signup'
-                            : 'Already own an account? Signup',
-                        style: const TextStyle(
-                          color: primaryColor,
-                        ),
-                      ),
-                    )
-                  ],
-                )
               ],
             ),
           ),
