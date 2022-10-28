@@ -12,13 +12,14 @@ ThemeData getAppTheme() {
     primaryColorDark: Colors.black,
     disabledColor: backgroundLite,
 
-
-    
     // card theme
-    cardTheme: const CardTheme(
+    cardTheme: CardTheme(
       color: cardsLite,
       shadowColor: Colors.grey,
       elevation: AppSize.s4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSize.s10),
+      ),
     ),
 
     // button theme
@@ -81,16 +82,18 @@ ThemeData getAppTheme() {
 
     // app bar theme
     appBarTheme: AppBarTheme(
+      iconTheme: const IconThemeData(color: Colors.black, size: AppSize.s40),
       color: Colors.transparent,
-      elevation: AppSize.s4,
+      elevation: AppSize.s0,
       centerTitle: true,
       titleTextStyle: getRegularStyle(
         color: Colors.black,
-        fontSize: FontSize.s16,
+        // fontSize: FontSize.s16,
       ),
       systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark,
       ),
     ),
 
@@ -108,9 +111,6 @@ ThemeData getAppTheme() {
         color: Colors.black,
       ),
     ),
-    
-    
-    
 
     colorScheme: ColorScheme.fromSwatch().copyWith(
       secondary: Colors.grey,

@@ -9,6 +9,6 @@ const backgroundDark = Color(0XFF161616);
 const cardsLite = Color(0XFFFFFFFF);
 const cardsDark = Color(0XFF242424);
 var greyShade =  Colors.grey.withOpacity(0.8);
-
+var greyShade2 = Colors.grey.shade300;
 
 var primaryOpacity = const Color(0XFFEE3A46).withOpacity(0.8);
