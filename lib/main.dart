@@ -1,6 +1,6 @@
 import 'package:diaree/resources/route_manager.dart';
 import 'package:diaree/resources/theme_manager.dart';
-import 'package:diaree/screens/entry/entry.dart';
+import 'package:diaree/screens/splash/entry.dart';
 import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 
