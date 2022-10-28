@@ -5,9 +5,8 @@ import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
 class AuthAcknowledgementScreen extends StatelessWidget {
-  const AuthAcknowledgementScreen({super.key, required this.credential});
+  const AuthAcknowledgementScreen({super.key,});
 
-  final UserCredential credential;
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import 'package:is_first_run/is_first_run.dart';
 import '../../constants/color.dart';
 import '../../resources/assets_manager.dart';
 import "dart:async";
@@ -14,34 +16,36 @@ class EntryScreen extends StatefulWidget {
 }
 
 class _EntryScreenState extends State<EntryScreen> {
+  var user = FirebaseAuth.instance.currentUser;
 
-
-
-  // TODO: Implement is_first_run fnc
+  _startRun() async {
+    bool ifr = await IsFirstRun.isFirstRun();
+    var duration = const Duration(seconds: 3);
+    if (ifr != null && !ifr) {
+      Timer(duration, _navigateToHomeOrAuth);
+    } else {
+      Timer(duration, _navigateToOnBoarding);
+    }
+  }
 
   void _navigateToHomeOrAuth() {
-    Timer(const Duration(seconds: 5), () {
-      // TODO: Implement UserID Auth Check here
-      // if(){
-      //  Navigator.of(context).pushReplacementNamed("");
-      // }else{
-      //  Navigator.of(context).pushReplacementNamed("");
-      // }
-
-      Navigator.of(context).pushReplacementNamed("");
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+      } else {
+        Navigator.of(context).pushReplacementNamed(RouteManager.authScreen);
+      }
     });
   }
 
   void _navigateToOnBoarding() {
-    Timer(const Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacementNamed(RouteManager.splashScreen);
-    });
+    Navigator.of(context).pushReplacementNamed(RouteManager.splashScreen);
   }
 
   @override
   void initState() {
     super.initState();
-    _navigateToOnBoarding();
+    _startRun();
   }
 
   @override
