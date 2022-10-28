@@ -1,6 +1,7 @@
 class AssetManager{
   static const String imagePath = "assets/images";
 
+  static const String googleImage = "$imagePath/google.png";
   static const String logo = "$imagePath/logo.png";
   static const String logoRed = "$imagePath/logo_red.png";
   static const String splashImage1 = "$imagePath/sp_1.png";

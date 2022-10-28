@@ -62,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 8),
                     ),
-                    onPressed: () => _navigateToSignin(),
+                    onPressed: () => _navigateToSignup(),
                     child: const Text('Create Account'),
                   ),
                   ElevatedButton(

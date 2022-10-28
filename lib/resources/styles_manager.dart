@@ -39,6 +39,14 @@ TextStyle getHeadingStyle({fontSize = FontSize.s40}){
   );
 }
 
+TextStyle getHeadingStyle2({fontSize = FontSize.s30}){
+  return  TextStyle(
+    fontWeight: FontWeightManager.extraBold,
+    fontSize:fontSize,
+    color: Colors.black,
+  );
+}
+
 // light fontstyle
 TextStyle getLightStyle({
   fontSize = FontSize.s12,
