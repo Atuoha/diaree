@@ -14,6 +14,8 @@ class RouteManager {
   static const String forgotPasswordScreen = "/forgotPasswordScreen";
   static const String signupAcknowledgeScreen = "/signupAcknowledge";
   static const String homeScreen = '/homeScreen';
+  static const String settingsScreen = '/settingsScreen';
+
 }
 
 final routes = {
