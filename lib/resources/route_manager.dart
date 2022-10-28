@@ -12,5 +12,5 @@ class RouteManager {
 final routes = {
   RouteManager.splashScreen: (context) => const SplashScreen(),
   RouteManager.welcomeScreen:(context)=> const WelcomeScreen(),
-  RouteManager.authScreen:(context)=> const AuthenticationScreen(),
+  RouteManager.authScreen:(context)=>  AuthenticationScreen(),
 };

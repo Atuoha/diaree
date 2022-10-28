@@ -12,6 +12,8 @@ ThemeData getAppTheme() {
     primaryColorDark: Colors.black,
     disabledColor: backgroundLite,
 
+
+    
     // card theme
     cardTheme: const CardTheme(
       color: cardsLite,
@@ -33,6 +35,8 @@ ThemeData getAppTheme() {
           borderRadius: BorderRadius.circular(AppSize.s8),
         ),
         backgroundColor: primaryColor,
+        disabledBackgroundColor: accent2,
+        disabledForegroundColor: Colors.white,
         textStyle: getRegularStyle(
           color: Colors.white,
           fontSize: FontSize.s16,
@@ -44,22 +48,28 @@ ThemeData getAppTheme() {
     // input decoration theme
     inputDecorationTheme: InputDecorationTheme(
       fillColor: textBoxLite,
+      filled: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
+        borderSide: const BorderSide(color: textBoxLite),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
+        borderSide: const BorderSide(color: textBoxLite),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
+        borderSide: const BorderSide(color: textBoxLite),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
+        borderSide: const BorderSide(color: textBoxLite),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
+        borderSide: const BorderSide(color: textBoxLite),
       ),
-      labelStyle: getMediumStyle(color: Colors.black),
+      labelStyle: getRegularStyle(color: Colors.black),
       hintStyle: getRegularStyle(color: Colors.grey),
       contentPadding: const EdgeInsets.all(AppPadding.p8),
       errorStyle: getRegularStyle(color: Colors.red),
@@ -98,6 +108,9 @@ ThemeData getAppTheme() {
         color: Colors.black,
       ),
     ),
+    
+    
+    
 
     colorScheme: ColorScheme.fromSwatch().copyWith(
       secondary: Colors.grey,

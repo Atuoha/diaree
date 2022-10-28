@@ -28,21 +28,19 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final _emailController = TextEditingController();
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
-  var isObscure = false;
+  bool isObscure = true;
 
-  // toggle to signup
-  void _toggleToSignup() {
+  bool isButtonDisabled = true;
+
+  // toggle auth
+  void _toggleAuth() {
     setState(() {
-      widget.isSignin = false;
+      widget.isSignin = !widget.isSignin;
     });
   }
 
-  // toggle to signin
-  void _toggleToSignin() {
-    setState(() {
-      widget.isSignin = true;
-    });
-  }
+  // navigate to forgotten password
+  void _navigateToForgottenPassword() {}
 
   @override
   void initState() {
@@ -50,6 +48,34 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       setState(() {});
     });
     super.initState();
+  }
+
+  // check entries for button disability
+  void checkEntries() {
+    if (widget.isSignin) {
+      if (_emailController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty) {
+        setState(() {
+          isButtonDisabled = false;
+        });
+      }
+    } else if (_emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _nameController.text.isNotEmpty) {
+      setState(() {
+        isButtonDisabled = false;
+      });
+    } else {
+      setState(() {
+        isButtonDisabled = true;
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    checkEntries();
+    super.didChangeDependencies();
   }
 
   Widget kTextField(
@@ -62,6 +88,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     return TextFormField(
       obscureText: obscureValue,
       controller: controller,
+      textInputAction:
+          field == Field.password ? TextInputAction.done : TextInputAction.next,
+      keyboardType: field == Field.email
+          ? TextInputType.emailAddress
+          : TextInputType.text,
       validator: (value) {
         switch (field) {
           case Field.name:
@@ -82,15 +113,21 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             }
             break;
         }
+        return null;
       },
       decoration: InputDecoration(
         hintText: hint,
         label: Text(label),
-        suffix: obscureValue
+        suffixIcon: obscureValue
             ? _passwordController.text.isNotEmpty
-                ? Icon(
-                    obscureValue ? Icons.visibility : Icons.visibility_off,
-                    color: obscureValue ? primaryColor : greyShade,
+                ? GestureDetector(
+                    onTap: () => setState(() {
+                      isObscure = !isObscure;
+                    }),
+                    child: Icon(
+                      obscureValue ? Icons.visibility : Icons.visibility_off,
+                      color: obscureValue ? greyShade : primaryColor,
+                    ),
                   )
                 : const SizedBox.shrink()
             : const SizedBox.shrink(),
@@ -98,59 +135,133 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     );
   }
 
+  // authenticate
+  void _authenticate() {}
+
+  // authenticate using google
+  void _googleAuthenticate() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Image.asset(AssetManager.logoRed),
-              // const SizedBox(height: AppSize.s10),
-              Column(
-                children: [
-                  Text(
-                    'Signin!',
-                    textAlign: TextAlign.center,
-                    style: getHeadingStyle(fontSize: FontSize.s30),
-                  ),
-                  kTextField(
-                    'Ujunwa Peace',
-                    'Name',
-                    Field.name,
-                    _nameController,
-                    false,
-                  ),
-                  const SizedBox(height: 10),
-                  kTextField(
-                    'ujunwa0001@gmail.com',
-                    'Email Address',
-                    Field.email,
-                    _emailController,
-                    false,
-                  ),
-                  const SizedBox(height: 10),
-                  kTextField(
-                    '*********',
-                    'Password',
-                    Field.password,
-                    _passwordController,
-                    isObscure,
-                  ),
-                ],
-              ),
-
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 74, vertical: 8),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Image.asset(AssetManager.logoRed),
+                // const SizedBox(height: AppSize.s10),
+                Column(
+                  children: [
+                    Text(
+                      widget.isSignin ? 'Signin!' : 'Signup!',
+                      textAlign: TextAlign.center,
+                      style: getHeadingStyle(fontSize: FontSize.s30),
+                    ),
+                    const SizedBox(height: 40),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          !widget.isSignin
+                              ? kTextField(
+                                  'Ujunwa Peace',
+                                  'Name',
+                                  Field.name,
+                                  _nameController,
+                                  false,
+                                )
+                              : const SizedBox.shrink(),
+                          const SizedBox(height: 10),
+                          kTextField(
+                            'ujunwa0001@gmail.com',
+                            'Email Address',
+                            Field.email,
+                            _emailController,
+                            false,
+                          ),
+                          const SizedBox(height: 10),
+                          kTextField(
+                            '*********',
+                            'Password',
+                            Field.password,
+                            _passwordController,
+                            isObscure,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-                onPressed: () {},
-                child: const Text('Sign in'),
-              ),
-            ],
+
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 74,
+                      vertical: 8,
+                    ),
+                  ),
+                  onPressed: isButtonDisabled ? null : () => _authenticate(),
+                  child: Text(
+                    widget.isSignin ? 'Signin' : 'Signup',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 8,
+                    ),
+                  ),
+                  onPressed: () => _googleAuthenticate(),
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Image.asset(
+                        AssetManager.googleImage,
+                        width: 15,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        widget.isSignin
+                            ? 'Signin with google'
+                            : 'Signup with google',
+                        style: const TextStyle(color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => _navigateToForgottenPassword(),
+                      child: const Text(
+                        'Forgotten Password',
+                        style: TextStyle(
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => _toggleAuth(),
+                      child: Text(
+                        widget.isSignin
+                            ? 'New here? Signup'
+                            : 'Already own an account? Signup',
+                        style: const TextStyle(
+                          color: primaryColor,
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
