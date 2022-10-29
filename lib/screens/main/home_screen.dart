@@ -31,11 +31,8 @@ class HomeScreen extends StatelessWidget {
     }
 
     // navigate to edit screen
-    void navigateToEdit() {
-      // Todo: Implement edit
-      Navigator.of(context)
-          .pushNamed(RouteManager.editNoteScreen)
-          .then((value) => Navigator.of(context).pop());
+    void createNew() {
+      Navigator.of(context).pushNamed(RouteManager.createNoteScreen);
     }
 
     // view entry
@@ -54,6 +51,9 @@ class HomeScreen extends StatelessWidget {
     // edit entry
     void editEntry() {
       // Todo: Implement edit entry
+      Navigator.of(context)
+          .pushNamed(RouteManager.editNoteScreen)
+          .then((value) => Navigator.of(context).pop());
     }
 
     // show options
@@ -122,7 +122,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
-        onPressed: () => navigateToCreateNewNote(),
+        onPressed: () => createNew(),
         child: const Icon(
           Icons.edit,
           color: Colors.white,
@@ -131,7 +131,7 @@ class HomeScreen extends StatelessWidget {
       ),
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => navigateToEdit(),
+          onPressed: () => createNew(),
           icon: const Icon(
             Icons.edit,
           ),
