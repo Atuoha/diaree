@@ -18,11 +18,6 @@ class HomeScreen extends StatelessWidget {
       Navigator.of(context).pushNamed(RouteManager.settingsScreen);
     }
 
-    // navigate to edit screen
-    void navigateToEdit() {
-      // Todo: Implement navigate to edit
-    }
-
     // search fnc
     void searchFnc() {
       //Todo: Implement search
@@ -30,12 +25,25 @@ class HomeScreen extends StatelessWidget {
 
     // navigate to create new note
     void navigateToCreateNewNote() {
-      //Todo: Implement navigation
+      Navigator.of(context)
+          .pushNamed(RouteManager.createNoteScreen)
+          .then((value) => Navigator.of(context).pop());
+    }
+
+    // navigate to edit screen
+    void navigateToEdit() {
+      // Todo: Implement edit
+      Navigator.of(context)
+          .pushNamed(RouteManager.editNoteScreen)
+          .then((value) => Navigator.of(context).pop());
     }
 
     // view entry
     void viewEntry() {
-      // Todo: Implement view entry
+      // Todo: Implement view Entry
+      Navigator.of(context)
+          .pushNamed(RouteManager.viewNoteScreen)
+          .then((value) => Navigator.of(context).pop());
     }
 
     // delete entry

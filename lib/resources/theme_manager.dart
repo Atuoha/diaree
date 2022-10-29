@@ -85,7 +85,6 @@ ThemeData getAppTheme() {
       iconTheme: const IconThemeData(color: Colors.black, size: AppSize.s40),
       color: Colors.transparent,
       elevation: AppSize.s0,
-      centerTitle: true,
       titleTextStyle: getRegularStyle(
         color: Colors.black,
         // fontSize: FontSize.s16,
