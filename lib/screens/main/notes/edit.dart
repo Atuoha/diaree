@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../../constants/color.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
+import '../../../resources/values_manager.dart';
+import 'package:intl/intl.dart';
 
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({Key? key}) : super(key: key);
@@ -13,13 +14,19 @@ class EditNoteScreen extends StatefulWidget {
   State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
-enum TextDirection { right, left, justify }
+enum TextDirection {
+  right,
+  left,
+  justify,
+  center,
+}
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final uId = FirebaseAuth.instance.currentUser!.uid;
+  final date = DateTime.now();
 
   bool isBold = false;
   bool isItalics = false;
@@ -27,6 +34,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   bool isJustified = true;
   bool isLeftAligned = false;
   bool isRightAligned = false;
+  bool isCentered = false;
 
   // toggle bold
   void toggleBold() {
@@ -36,9 +44,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   // toggle underline
-  void toggleJustify() {
+  void toggleUnderline() {
     setState(() {
-      isJustified = !isJustified;
+      isUnderlined = !isUnderlined;
     });
   }
 
@@ -57,6 +65,16 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           isRightAligned = true;
           isJustified = false;
           isLeftAligned = false;
+          isCentered = false;
+        });
+        break;
+
+      case TextDirection.center:
+        setState(() {
+          isRightAligned = false;
+          isJustified = false;
+          isLeftAligned = false;
+          isCentered = true;
         });
         break;
 
@@ -65,6 +83,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           isRightAligned = false;
           isJustified = false;
           isLeftAligned = true;
+          isCentered = false;
         });
         break;
 
@@ -73,6 +92,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           isRightAligned = false;
           isJustified = true;
           isLeftAligned = false;
+          isCentered = false;
         });
         break;
     }
@@ -109,6 +129,19 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton:
+          WidgetsBinding.instance.window.viewInsets.bottom > 0.0
+              ? FloatingActionButton(
+                  backgroundColor: primaryColor,
+                  onPressed: () => FocusScope.of(context).unfocus(),
+                  child: const Icon(
+                    Icons.keyboard,
+                    color: Colors.white,
+                    size: AppSize.s35,
+                  ),
+                )
+              : const SizedBox.shrink(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: Builder(
@@ -130,7 +163,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           ),
         ],
         title: Text(
-          'Edit Entry',
+          'Create Entry',
           style: getRegularStyle(
             color: Colors.black,
             fontWeight: FontWeightManager.medium,
@@ -139,90 +172,191 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         ),
       ),
       backgroundColor: backgroundLite,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Summer\nVacation!',
-                      style: getMediumStyle(
-                        color: Colors.black,
-                        fontSize: FontSize.s28,
-                      ),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                      vertical: 5,
                     ),
-                    Text(
-                      '17th April 2002',
-                      style: getRegularStyle(
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-                Image.asset(AssetManager.happy)
-              ],
+                    height: 83,
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(DateFormat.yMMMMEEEEd().format(date)),
+                        TextFormField(
+                          controller: _titleController,
+                          maxLines: null,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Title can not be empty";
+                            }
+                            return null;
+                          },
+                          textInputAction: TextInputAction.next,
+                          autofocus: true,
+                          decoration: const InputDecoration(
+                            hintText: "Title here...",
+                            filled: false,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: getMediumStyle(
+                            color: Colors.black,
+                            fontSize: FontSize.s28,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: SizedBox(
+                        height: 70,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () =>
+                                    toggleTextDirection(TextDirection.left),
+                                child: const Icon(
+                                  Icons.format_align_left,
+                                  size: AppSize.s40,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () =>
+                                    toggleTextDirection(TextDirection.center),
+                                child: const Icon(
+                                  Icons.format_align_center,
+                                  size: AppSize.s40,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () =>
+                                    toggleTextDirection(TextDirection.justify),
+                                child: const Icon(
+                                  Icons.format_align_justify,
+                                  size: AppSize.s40,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () =>
+                                    toggleTextDirection(TextDirection.right),
+                                child: const Icon(
+                                  Icons.format_align_right,
+                                  size: AppSize.s40,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => toggleBold(),
+                                child: const Icon(
+                                  Icons.format_bold,
+                                  size: AppSize.s50,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => toggleItalics(),
+                                child: const Icon(
+                                  Icons.format_italic,
+                                  size: AppSize.s50,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => toggleUnderline(),
+                                child: const Icon(
+                                  Icons.format_underline,
+                                  size: AppSize.s40,
+                                ),
+                              ),
+                            ])),
+                  )
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 30,
-                vertical: 40,
-              ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(60),
-                  topRight: Radius.circular(60),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 40,
                 ),
-              ),
-              child: TextFormField(
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  hintText: "Type here...",
-                  filled: false,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60),
                   ),
                 ),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: FontSize.s16,
-                  fontWeight: isBold
-                      ? FontWeightManager.bold
-                      : FontWeightManager.normal,
-                  decoration: isUnderlined
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                  fontStyle: isItalics ? FontStyle.italic : FontStyle.normal,
+                child: TextFormField(
+                  controller: _contentController,
+                  maxLines: null,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Content can not be empty";
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.multiline,
+                  decoration: const InputDecoration(
+                    hintText: "Type here...",
+                    filled: false,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: FontSize.s16,
+                    fontWeight: isBold
+                        ? FontWeightManager.bold
+                        : FontWeightManager.normal,
+                    decoration: isUnderlined
+                        ? TextDecoration.underline
+                        : TextDecoration.none,
+                    fontStyle: isItalics ? FontStyle.italic : FontStyle.normal,
+                  ),
+                  textAlign: isJustified
+                      ? TextAlign.justify
+                      : isLeftAligned
+                          ? TextAlign.left
+                          : isRightAligned
+                              ? TextAlign.right
+                              : isCentered
+                                  ? TextAlign.center
+                                  : TextAlign.justify,
                 ),
-                textAlign: isJustified
-                    ? TextAlign.justify
-                    : isLeftAligned
-                        ? TextAlign.left
-                        : isRightAligned
-                            ? TextAlign.right
-                            : TextAlign.justify,
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
       bottomSheet: Container(
         padding: const EdgeInsets.symmetric(horizontal: 30),
