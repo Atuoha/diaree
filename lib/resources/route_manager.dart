@@ -1,4 +1,7 @@
 import 'package:diaree/screens/authentication/auth.dart';
+import 'package:diaree/screens/main/notes/create.dart';
+import 'package:diaree/screens/main/notes/edit.dart';
+import 'package:diaree/screens/main/notes/view.dart';
 import 'package:diaree/screens/main/welcome.dart';
 import 'package:diaree/screens/splash/splash.dart';
 import "package:flutter/material.dart";
@@ -15,7 +18,9 @@ class RouteManager {
   static const String signupAcknowledgeScreen = "/signupAcknowledge";
   static const String homeScreen = '/homeScreen';
   static const String settingsScreen = '/settingsScreen';
-
+  static const String viewNoteScreen = '/viewNote';
+  static const String createNoteScreen = '/createNote';
+  static const String editNoteScreen = '/editNote';
 }
 
 final routes = {
@@ -26,5 +31,8 @@ final routes = {
       const ForgottenPasswordScreen(),
   RouteManager.signupAcknowledgeScreen: (context) =>
       const AuthAcknowledgementScreen(),
-  RouteManager.homeScreen: (context) => const HomeScreen()
+  RouteManager.homeScreen: (context) => const HomeScreen(),
+  RouteManager.viewNoteScreen: (context) => const ViewNoteScreen(),
+  RouteManager.createNoteScreen: (context) => const CreateNoteScreen(),
+  RouteManager.editNoteScreen: (context) => const EditNoteScreen(),
 };
