@@ -1,4 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../../constants/color.dart';
+import '../../../resources/assets_manager.dart';
+import '../../../resources/font_manager.dart';
+import '../../../resources/styles_manager.dart';
 
 class EditNoteScreen extends StatefulWidget {
   const EditNoteScreen({Key? key}) : super(key: key);
@@ -7,9 +13,246 @@ class EditNoteScreen extends StatefulWidget {
   State<EditNoteScreen> createState() => _EditNoteScreenState();
 }
 
+enum TextDirection { right, left, justify }
+
 class _EditNoteScreenState extends State<EditNoteScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _contentController = TextEditingController();
+  final uId = FirebaseAuth.instance.currentUser!.uid;
+
+  bool isBold = false;
+  bool isItalics = false;
+  bool isUnderlined = false;
+  bool isJustified = true;
+  bool isLeftAligned = false;
+  bool isRightAligned = false;
+
+  // toggle bold
+  void toggleBold() {
+    setState(() {
+      isBold = !isBold;
+    });
+  }
+
+  // toggle underline
+  void toggleJustify() {
+    setState(() {
+      isJustified = !isJustified;
+    });
+  }
+
+  // toggle Italics
+  void toggleItalics() {
+    setState(() {
+      isItalics = !isItalics;
+    });
+  }
+
+  // toggle between justify,left-aligned and right-aligned
+  void toggleTextDirection(TextDirection direction) {
+    switch (direction) {
+      case TextDirection.right:
+        setState(() {
+          isRightAligned = true;
+          isJustified = false;
+          isLeftAligned = false;
+        });
+        break;
+
+      case TextDirection.left:
+        setState(() {
+          isRightAligned = false;
+          isJustified = false;
+          isLeftAligned = true;
+        });
+        break;
+
+      case TextDirection.justify:
+        setState(() {
+          isRightAligned = false;
+          isJustified = true;
+          isLeftAligned = false;
+        });
+        break;
+    }
+  }
+
+  // save edit
+  void saveNote() {
+    // Todo: Implement Edit
+  }
+
+  var currentEmotionIndex = 0;
+  final List<String> emotions = [
+    AssetManager.happy,
+    AssetManager.smile,
+    AssetManager.aww,
+    AssetManager.eh,
+    AssetManager.sad,
+  ];
+
+  Widget emotionBox(String emotion, int index) {
+    return GestureDetector(
+      onTap: () => setState(() {
+        currentEmotionIndex = index;
+      }),
+      child: CircleAvatar(
+        backgroundColor:
+            currentEmotionIndex == index ? primaryColor : Colors.transparent,
+        child: Image.asset(emotion),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            padding: const EdgeInsets.only(left: 18),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            padding: const EdgeInsets.only(right: 18),
+            onPressed: () => saveNote(),
+            icon: const Icon(
+              Icons.save,
+            ),
+          ),
+        ],
+        title: Text(
+          'Edit Entry',
+          style: getRegularStyle(
+            color: Colors.black,
+            fontWeight: FontWeightManager.medium,
+            fontSize: FontSize.s18,
+          ),
+        ),
+      ),
+      backgroundColor: backgroundLite,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(30),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Summer\nVacation!',
+                      style: getMediumStyle(
+                        color: Colors.black,
+                        fontSize: FontSize.s28,
+                      ),
+                    ),
+                    Text(
+                      '17th April 2002',
+                      style: getRegularStyle(
+                        color: Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+                Image.asset(AssetManager.happy)
+              ],
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 40,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(60),
+                  topRight: Radius.circular(60),
+                ),
+              ),
+              child: TextFormField(
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: const InputDecoration(
+                  hintText: "Type here...",
+                  filled: false,
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: FontSize.s16,
+                  fontWeight: isBold
+                      ? FontWeightManager.bold
+                      : FontWeightManager.normal,
+                  decoration: isUnderlined
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                  fontStyle: isItalics ? FontStyle.italic : FontStyle.normal,
+                ),
+                textAlign: isJustified
+                    ? TextAlign.justify
+                    : isLeftAligned
+                        ? TextAlign.left
+                        : isRightAligned
+                            ? TextAlign.right
+                            : TextAlign.justify,
+              ),
+            ),
+          )
+        ],
+      ),
+      bottomSheet: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        height: 55,
+        color: backgroundLite,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Mood',
+              style: getMediumStyle(
+                color: Colors.black,
+                fontSize: FontSize.s16,
+              ),
+            ),
+            // SizedBox(width: 50,),
+            SizedBox(
+              width: size.width / 1.9,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: emotions.length,
+                itemBuilder: (context, index) => emotionBox(
+                  emotions[index],
+                  index,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
