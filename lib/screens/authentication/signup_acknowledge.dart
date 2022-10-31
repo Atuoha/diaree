@@ -40,7 +40,7 @@ class AuthAcknowledgementScreen extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 60,
+              horizontal: 50,
               vertical: 8,
             ),
           ),
