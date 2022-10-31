@@ -5,15 +5,15 @@ class SettingsData extends ChangeNotifier {
   bool _isPinSet = false;
   bool _isSyncAutomatically = false;
 
-  get isDarkTheme {
+  get getIsDarkTheme {
     return _isDarkTheme;
   }
 
-  get isPinSet {
+  get getIsPinSet {
     return _isPinSet;
   }
 
-  get isSyncAutomatically {
+  get getIsSyncAutomatically {
     return _isSyncAutomatically;
   }
 

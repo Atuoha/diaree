@@ -115,30 +115,35 @@ class _ImageUploaderState extends State<ImageUploader> {
     return GestureDetector(
       onTap: () => _imagePickerDialog(),
       child: CircleAvatar(
-        // radius: profileImage == null ? 50 : 40,
-        radius: 50,
+        radius: widget.isProfileImageEmpty && profileImage == null ? 30 : 23,
         backgroundColor: Colors.white,
         child: Center(
           child: profileImage == null
               ? widget.isProfileImageEmpty
                   ? Image.asset(
                       AssetManager.avatarSmall,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: Image.network(
-                        widget.imgUrl,
-                        fit: BoxFit.cover,
+                  : Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: Image.network(
+                          widget.imgUrl,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ) // this will load imgUrl from firebase
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: Image.file(
-                    File(
-                      profileImage!.path,
+              : Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: Image.file(
+                      File(
+                        profileImage!.path,
+                      ),
+                      // fit: BoxFit.cover,
                     ),
-                    fit: BoxFit.cover,
                   ),
                 ),
         ),

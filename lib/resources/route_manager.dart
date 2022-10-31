@@ -26,7 +26,6 @@ class RouteManager {
   static const String pinSetup = '/pinSetup';
 }
 
-
 final routes = {
   RouteManager.splashScreen: (context) => const SplashScreen(),
   RouteManager.welcomeScreen: (context) => const WelcomeScreen(),
@@ -39,6 +38,5 @@ final routes = {
   RouteManager.viewNoteScreen: (context) => const ViewNoteScreen(),
   RouteManager.createNoteScreen: (context) => const CreateNoteScreen(),
   RouteManager.editNoteScreen: (context) => const EditNoteScreen(),
-  RouteManager.settingsScreen: (context)=>const SettingsScreen(),
-  RouteManager.pinSetup:(context)=>const PinSetup(),
+  RouteManager.settingsScreen: (context) => const SettingsScreen(),
 };
