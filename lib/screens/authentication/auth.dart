@@ -157,14 +157,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   // loading
   void loadingFnc() {
-    setState(() {
-      isLoading = true;
-    });
-
     Timer(const Duration(seconds: 4), () {
       if (widget.isSignin) {
         // TODO: Home screen routeName
-        Navigator.of(context).pushReplacementNamed("");
+        Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
       }
       Navigator.of(context)
           .pushReplacementNamed(RouteManager.signupAcknowledgeScreen);
@@ -197,6 +193,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     if (!valid) return;
 
     try {
+      setState(() {
+        isLoading = true;
+      });
       if (widget.isSignin) {
         // authenticate signin
         await firebaseAuth
@@ -248,6 +247,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   // authenticate using google
   Future<void> _googleAuthenticate() async {
+    setState(() {
+      isLoading = true;
+    });
+
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -274,7 +277,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           "email": googleUser.email,
           "avatar": googleUser.photoUrl,
           "pin": "0000",
-          'auth-type': 'email',
+          'auth-type': 'google-auth',
         },
       ).then((value) {
         loadingFnc();
@@ -321,7 +324,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 Column(
                   children: [
                     Text(
-                      widget.isSignin ? 'Signin!' : 'Signup!',
+                      widget.isSignin ? 'Sign in!' : 'Sign up!',
                       textAlign: TextAlign.center,
                       style: getHeadingStyle(fontSize: FontSize.s30),
                     ),
