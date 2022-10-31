@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PinSetup extends StatefulWidget {
-  const PinSetup({Key? key}) : super(key: key);
+class PinSetupScreen extends StatefulWidget {
+  const PinSetupScreen({Key? key}) : super(key: key);
 
   @override
-  State<PinSetup> createState() => _PinSetupState();
+  State<PinSetupScreen> createState() => _PinSetupScreenState();
 }
 
-class _PinSetupState extends State<PinSetup> {
+class _PinSetupScreenState extends State<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Container();

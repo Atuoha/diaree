@@ -215,7 +215,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           "username": _nameController.text.trim(),
           "email": _emailController.text.trim(),
           "avatar": "None",
-          "pin": "",
+          "pin": "0000",
           'auth-type': 'email',
         }).then((value) => loadingFnc());
       }
@@ -273,7 +273,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           "username": googleUser!.displayName,
           "email": googleUser.email,
           "avatar": googleUser.photoUrl,
-          "pin": "",
+          "pin": "0000",
           'auth-type': 'email',
         },
       ).then((value) {

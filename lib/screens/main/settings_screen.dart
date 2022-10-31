@@ -1,14 +1,19 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/helpers/image-uploader.dart';
+import 'package:diaree/providers/settings.dart';
 import 'package:diaree/resources/route_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
 import '../../constants/color.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
+import 'pin_setup.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -23,17 +28,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool isProfileImageEmpty = true;
   String profileImgUrl = AssetManager.avatarSmall;
   File? pickedProfileImage;
+  SettingsData? settingsData;
+  bool isDarkTheme = false;
+  bool isPinSet = false;
+  bool isSyncAutomatically = false;
+  bool isSyncing = false;
+  bool isSyncingDone = false;
+  DocumentSnapshot? profileDetails;
+
+  // loading settings from provider
+  void _loadSettings() {
+    var settings = Provider.of<SettingsData>(context);
+    setState(() {
+      settingsData = settings;
+      isDarkTheme = settingsData!.getIsDarkTheme;
+      isPinSet = settingsData!.getIsPinSet;
+      isSyncAutomatically = settingsData!.getIsSyncAutomatically;
+    });
+  }
 
   // load profile details
   Future<void> _loadProfileDetails() async {
-    var profileDetails =
+    var details =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    if (profileDetails['avatar'] != "None") {
+    if (details['avatar'] != "None") {
       setState(() {
-        profileImgUrl = profileDetails['avatar'];
+        profileImgUrl = details['avatar'];
         isProfileImageEmpty = false;
       });
     }
+    setState(() {
+      profileDetails = details;
+    });
   }
 
   // select profile image
@@ -107,10 +133,97 @@ class _SettingsScreenState extends State<SettingsScreen> {
     fontSize: FontSize.s18,
   );
 
+  // switch list tile
+  SwitchListTile kSwitchTile(
+    String title,
+    bool value,
+    Function action,
+  ) {
+    return SwitchListTile(
+      activeTrackColor: accent,
+      inactiveTrackColor: textBoxLite,
+      activeColor: Colors.white,
+      value: value,
+      onChanged: (value) => action(),
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        title,
+        style: style,
+      ),
+    );
+  }
+
+  // navigate to pin settings
+  void _navigateToPinSettings() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PinSetupScreen(),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _loadProfileDetails();
+  }
+
+  // snackbar for error message
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: primaryColor,
+      ),
+    );
+  }
+
+  // sync settings
+  Future<void> _syncSettings() async {
+    if (pickedProfileImage != null) {
+      setState(() {
+        isSyncing = true;
+      });
+
+      var storageRef =
+          FirebaseStorage.instance.ref().child('avatars').child('$userId.jpg');
+      File? file;
+      if (pickedProfileImage != null) {
+        setState(() {
+          file = File(pickedProfileImage!.path);
+        });
+      }
+
+      try {
+        await storageRef.putFile(file!);
+        var downloadLink = storageRef.getDownloadURL();
+        FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'avatar': downloadLink,
+        });
+
+        setState(() {
+          isSyncingDone = true;
+        });
+      } catch (e) {
+        if (kDebugMode) {
+          print('An error occurred! $e');
+        }
+      }
+    } else {
+      showSnackBar(
+          'There is nothing to sync. Other settings are synced automatically by default');
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadSettings();
   }
 
   @override
@@ -164,6 +277,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   selectImageFnc: selectImageFnc,
                   isProfileImageEmpty: isProfileImageEmpty,
                 ),
+              ),
+              kSwitchTile(
+                'Dark Mode',
+                isDarkTheme,
+                settingsData!.toggleIsDarkTheme,
+              ),
+              kSwitchTile(
+                'Biometrics/PIN Lock',
+                isPinSet,
+                settingsData!.toggleIsPinSet,
+              ),
+              kSwitchTile(
+                'Sync Automatically',
+                isSyncAutomatically,
+                settingsData!.toggleIsSyncAutomatically,
+              ),
+              isPinSet
+                  ? ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Manage Pin',
+                        style: style,
+                      ),
+                      trailing: IconButton(
+                        onPressed: () => _navigateToPinSettings(),
+                        icon: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Sync Now',
+                  style: style,
+                ),
+                trailing: isSyncing
+                    ? const Padding(
+                        padding: EdgeInsets.only(right: 10.0),
+                        child: SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.black54,
+                          ),
+                        ),
+                      )
+                    : isSyncingDone
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: Colors.black,
+                          )
+                        : IconButton(
+                            onPressed: () => _syncSettings(),
+                            icon: const Icon(Icons.chevron_right),
+                          ),
               ),
             ],
           ),
