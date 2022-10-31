@@ -201,14 +201,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       try {
         await storageRef.putFile(file!);
-        var downloadLink = storageRef.getDownloadURL();
-        FirebaseFirestore.instance.collection('users').doc(userId).update({
+        var downloadLink = await storageRef.getDownloadURL();
+        FirebaseFirestore.instance.collection('users').doc(userId).set({
           'avatar': downloadLink,
-        });
-
-        setState(() {
-          isSyncingDone = true;
-        });
+        }).then(
+          (value) => setState(() {
+            isSyncingDone = true;
+          }),
+        );
+      } on FirebaseException catch (e) {
+        showSnackBar('Error occurred! ${e.message}');
       } catch (e) {
         if (kDebugMode) {
           print('An error occurred! $e');
