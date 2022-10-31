@@ -202,13 +202,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       try {
         await storageRef.putFile(file!);
         var downloadLink = await storageRef.getDownloadURL();
-        FirebaseFirestore.instance.collection('users').doc(userId).set({
+        FirebaseFirestore.instance.collection('users').doc(userId).update({
           'avatar': downloadLink,
-        }).then(
-          (value) => setState(() {
-            isSyncingDone = true;
-          }),
-        );
+        });
+
+        setState(() {
+          isSyncing = false;
+          isSyncingDone = true;
+        });
       } on FirebaseException catch (e) {
         showSnackBar('Error occurred! ${e.message}');
       } catch (e) {
@@ -329,9 +330,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       )
                     : isSyncingDone
-                        ? const Icon(
-                            Icons.check_circle,
-                            color: Colors.black,
+                        ? const Padding(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child: Icon(
+                              Icons.check,
+                              color: Colors.black,
+                            ),
                           )
                         : IconButton(
                             onPressed: () => _syncSettings(),
