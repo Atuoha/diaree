@@ -1,9 +1,10 @@
+import 'package:diaree/providers/settings.dart';
 import 'package:diaree/resources/route_manager.dart';
 import 'package:diaree/resources/theme_manager.dart';
 import 'package:diaree/screens/splash/entry.dart';
 import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
-
+import "package:provider/provider.dart";
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -19,11 +20,14 @@ class Diaree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: getAppTheme(),
-      debugShowCheckedModeBanner: false,
-      home: const EntryScreen(),
-      routes: routes,
+    return ChangeNotifierProvider(
+      create: (context) => SettingsData(),
+      child: MaterialApp(
+        theme: getAppTheme(),
+        debugShowCheckedModeBanner: false,
+        home: const EntryScreen(),
+        routes: routes,
+      ),
     );
   }
 }

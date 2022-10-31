@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diaree/helpers/image-uploader.dart';
 import 'package:diaree/resources/route_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import '../../constants/color.dart';
+import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
@@ -15,6 +19,29 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final firebaseAuth = FirebaseAuth.instance;
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+  bool isProfileImageEmpty = true;
+  String profileImgUrl = AssetManager.avatarSmall;
+  File? pickedProfileImage;
+
+  // load profile details
+  Future<void> _loadProfileDetails() async {
+    var profileDetails =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (profileDetails['avatar'] != "None") {
+      setState(() {
+        profileImgUrl = profileDetails['avatar'];
+        isProfileImageEmpty = false;
+      });
+    }
+  }
+
+  // select profile image
+  void selectImageFnc(File pickedImage) {
+    setState(() {
+      pickedProfileImage = pickedImage;
+    });
+  }
 
   // logout action
   Future<void> _logoutAction() async {
@@ -30,8 +57,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
         title: const Text('Do you want to sign out?'),
         actionsAlignment: MainAxisAlignment.spaceBetween,
+        actionsPadding: const EdgeInsets.all(17),
         actions: [
           Directionality(
             textDirection: TextDirection.rtl,
@@ -77,6 +108,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _loadProfileDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
@@ -108,25 +145,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
           vertical: 30,
         ),
         child: Container(
-          height: size.height / 1.4,
+          height: size.height / 1.35,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppSize.s30),
           ),
-          padding: const EdgeInsets.symmetric(
-            vertical: 20,
-            horizontal: 10,
-          ),
+          padding: const EdgeInsets.fromLTRB(15, 20, 0, 0),
           child: ListView(
             children: [
               ListTile(
+                contentPadding: EdgeInsets.zero,
                 title: Text(
                   'Change Profile Image',
                   style: style,
                 ),
-                // trailing: ,
+                trailing: ImageUploader(
+                  imgUrl: profileImgUrl,
+                  selectImageFnc: selectImageFnc,
+                  isProfileImageEmpty: isProfileImageEmpty,
+                ),
               ),
-
             ],
           ),
         ),
