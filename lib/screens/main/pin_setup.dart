@@ -10,6 +10,8 @@ class PinSetupScreen extends StatefulWidget {
 class _PinSetupScreenState extends State<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+
+    );
   }
 }
