@@ -11,7 +11,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+        appBar: AppBar()
     );
   }
 }
