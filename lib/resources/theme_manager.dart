@@ -36,7 +36,7 @@ ThemeData getAppTheme() {
           borderRadius: BorderRadius.circular(AppSize.s8),
         ),
         backgroundColor: primaryColor,
-        disabledBackgroundColor: accent2,
+        disabledBackgroundColor: accentColor2,
         disabledForegroundColor: Colors.white,
         textStyle: getRegularStyle(
           color: Colors.white,

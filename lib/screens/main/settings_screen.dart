@@ -158,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Function action,
   ) {
     return SwitchListTile(
-      activeTrackColor: accent,
+      activeTrackColor: accentColor,
       inactiveTrackColor: textBoxLite,
       activeColor: Colors.white,
       value: value,

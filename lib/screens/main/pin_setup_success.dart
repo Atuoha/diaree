@@ -4,15 +4,15 @@ import '../../resources/route_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
-class AuthAcknowledgementScreen extends StatelessWidget {
-  const AuthAcknowledgementScreen({super.key,});
+class PinSetupSuccessScreen extends StatelessWidget {
+  const PinSetupSuccessScreen({super.key,});
 
 
   @override
   Widget build(BuildContext context) {
     // navigate to main screen
     void navigateToMainScreen() {
-      Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+      Navigator.of(context).pushReplacementNamed(RouteManager.settingsScreen);
     }
 
     return Scaffold(
@@ -22,10 +22,10 @@ class AuthAcknowledgementScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(AssetManager.success),
+              Image.asset(AssetManager.success2),
               const SizedBox(height: AppSize.s35),
               Text(
-                'Great! You\'ve \nsuccessfully created an account.',
+                'You\'ve successfully sent a new pin.',
                 textAlign: TextAlign.center,
                 style: getHeadingStyle2(),
               ),
@@ -40,12 +40,12 @@ class AuthAcknowledgementScreen extends StatelessWidget {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(
-              horizontal: 50,
+              horizontal: 60,
               vertical: 8,
             ),
           ),
           onPressed: () => navigateToMainScreen(),
-          child: const Text('Jump in'),
+          child: const Text('Go back to settings'),
         ),
       ),
     );

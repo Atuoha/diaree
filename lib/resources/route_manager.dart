@@ -9,7 +9,9 @@ import "package:flutter/material.dart";
 import '../screens/authentication/forgot_password.dart';
 import '../screens/authentication/signup_acknowledge.dart';
 import '../screens/main/home_screen.dart';
+import '../screens/main/pin_confirm.dart';
 import '../screens/main/pin_setup.dart';
+import '../screens/main/pin_setup_success.dart';
 import '../screens/main/settings_screen.dart';
 
 class RouteManager {
@@ -24,6 +26,8 @@ class RouteManager {
   static const String createNoteScreen = '/createNote';
   static const String editNoteScreen = '/editNote';
   static const String pinSetup = '/pinSetup';
+  static const String pinConfirmScreen = '/pinConfirm';
+  static const String pinSuccessScreen = '/pinSuccess';
 }
 
 final routes = {
@@ -39,4 +43,7 @@ final routes = {
   RouteManager.createNoteScreen: (context) => const CreateNoteScreen(),
   RouteManager.editNoteScreen: (context) => const EditNoteScreen(),
   RouteManager.settingsScreen: (context) => const SettingsScreen(),
+  RouteManager.pinConfirmScreen: (context) => const PinConfirmScreen(),
+  RouteManager.pinSuccessScreen: (context) => const PinSetupSuccessScreen(),
+
 };

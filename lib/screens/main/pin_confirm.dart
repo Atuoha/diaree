@@ -1,31 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
-import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
-import '../../resources/route_manager.dart';
 import '../../resources/values_manager.dart';
+import '../../resources/route_manager.dart';
 
-class PinSetupScreen extends StatefulWidget {
-  const PinSetupScreen({
+class PinConfirmScreen extends StatefulWidget {
+  const PinConfirmScreen({
     Key? key,
-    required this.profileDetails,
-    required this.isPinSetBefore,
-    required this.isProfileImageEmpty,
   }) : super(key: key);
-  final DocumentSnapshot? profileDetails;
-  final bool isPinSetBefore;
-  final bool isProfileImageEmpty;
 
   @override
-  State<PinSetupScreen> createState() => _PinSetupScreenState();
+  State<PinConfirmScreen> createState() => _PinConfirmScreenState();
 }
 
-class _PinSetupScreenState extends State<PinSetupScreen> {
+class _PinConfirmScreenState extends State<PinConfirmScreen> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   bool isPinSyncing = false;
   final _firstPin = TextEditingController();
@@ -34,6 +27,8 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   final _forthPin = TextEditingController();
   var currentPinIndex = 0;
   bool isPinInCorrect = false;
+  var previousEnteredPin = "";
+  bool isConfirmPinSection = false;
 
   // add value to pin box
   void _addValue(String value, int index) {
@@ -54,7 +49,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     }
     setState(() {
       if (currentPinIndex <= 4) currentPinIndex += 1;
-      print(currentPinIndex);
     });
   }
 
@@ -77,7 +71,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     }
     setState(() {
       if (currentPinIndex > 0) currentPinIndex -= 1;
-      print(currentPinIndex);
     });
   }
 
@@ -153,13 +146,38 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     // Todo: Implement fingerprint
   }
 
+  // reset pin setup
+  void _resetPinSetup() {
+    setState(() {
+      currentPinIndex = 0;
+      _firstPin.text = "";
+      _secondPin.text = "";
+      _thirdPin.text = "";
+      _forthPin.text = "";
+      isConfirmPinSection = false;
+    });
+  }
+
+  // migrate to pin confirm
+  void _pinConfirmMigration() {
+    setState(() {
+      currentPinIndex = 0;
+      _firstPin.text = "";
+      _secondPin.text = "";
+      _thirdPin.text = "";
+      _forthPin.text = "";
+      isPinSyncing = false;
+      previousEnteredPin =
+          _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
+    });
+  }
+
   // save pin to firestore
   void _savePin() {
     // Todo Implement save pin
     setState(() {
       isPinSyncing = true;
     });
-    var oldPin = widget.profileDetails!['pin'];
     var newPinEntry =
         _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
 
@@ -172,23 +190,38 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         isPinSyncing = false;
       });
     } else {
-      if (oldPin != newPinEntry) {
-        showSnackBar('Incorrect old pin. Try again', context);
-        setState(() {
-          isPinInCorrect = true;
-          isPinSyncing = false;
-        });
-      }else{
-        Navigator.of(context).pushReplacementNamed(RouteManager.pinConfirmScreen);
+      if (isConfirmPinSection) {
+        // the previous pin has been entered
+        if (previousEnteredPin != newPinEntry) {
+          showSnackBar('Pin Does not match. Try again!', context);
+          setState(() {
+            isPinInCorrect = true;
+            isPinSyncing = false;
+          });
+          _resetPinSetup();
+        } else {
+          try {
+            FirebaseFirestore.instance.collection('users').doc(userId).update({
+              'pin': newPinEntry,
+            });
+            Navigator.of(context).pushReplacementNamed(RouteManager.pinSuccessScreen);
+          } on FirebaseException catch (e) {
+            showSnackBar('Error occurred! ${e.message}', context);
+          } catch (e) {
+            if (kDebugMode) {
+              print('An error occurred! $e');
+            }
+          }
+        }
+      } else {
+        // migrating to pin confirmation
+        _pinConfirmMigration();
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final username = widget.profileDetails!['fullname'];
-    final usernameSplit = username.split(' ');
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
@@ -209,21 +242,10 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              widget.isProfileImageEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(AssetManager.avatarBig),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        widget.profileDetails!['avatar'],
-                        width: 100,
-                      ),
-                    ),
-              const SizedBox(height: 10),
               Text(
-                'Welcome, ${usernameSplit[1]}',
+                !isConfirmPinSection
+                    ? 'Create a new pin'
+                    : 'Re-enter your new Pin',
                 style: getMediumStyle(
                   color: Colors.black,
                   fontSize: FontSize.s30,
@@ -231,18 +253,15 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               ),
               isPinInCorrect
                   ? Text(
-                      'You\'ve entered an incorrect pin. Try again!',
+                      'Pin Does not match. Try again!',
                       style: getRegularStyle(color: accentColor),
                     )
-                  : widget.isPinSetBefore
-                      ? Text(
-                          'Please enter your passcode',
-                          style: getRegularStyle(color: Colors.black),
-                        )
-                      : Text(
-                          'Enter default password: 0000',
-                          style: getRegularStyle(color: Colors.black),
-                        ),
+                  : Text(
+                      !isConfirmPinSection
+                          ? 'Please enter your passcode'
+                          : 'Please enter your password again',
+                      style: getRegularStyle(color: Colors.black),
+                    ),
               const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
