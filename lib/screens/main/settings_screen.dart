@@ -35,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool isSyncing = false;
   bool isSyncingDone = false;
   DocumentSnapshot? profileDetails;
+  bool isPinSetBefore = false;
 
   // loading settings from provider
   void _loadSettings() {
@@ -51,6 +52,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadProfileDetails() async {
     var details =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    // checking if avatar is set
+    if (details['avatar'] != "None") {
+      setState(() {
+        profileImgUrl = details['avatar'];
+        isProfileImageEmpty = false;
+      });
+    }
+
+    // checking if pin is set
+    if (details['pin'] != "0000") {
+      setState(() {
+        isPinSetBefore = true;
+      });
+    }
+
     if (details['avatar'] != "None") {
       setState(() {
         profileImgUrl = details['avatar'];
@@ -157,7 +174,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _navigateToPinSettings() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const PinSetupScreen(),
+        builder: (context) => PinSetupScreen(
+          profileDetails: profileDetails,
+          isPinSetBefore: isPinSetBefore,
+        ),
       ),
     );
   }

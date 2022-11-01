@@ -100,7 +100,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   // save edit
   void saveNote() {
-    // Todo: Implement Edit
+    // Todo: Implement Create
   }
 
   var currentEmotionIndex = 0;
@@ -119,7 +119,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       }),
       child: CircleAvatar(
         backgroundColor:
-        currentEmotionIndex == index ? primaryColor : Colors.transparent,
+            currentEmotionIndex == index ? primaryColor : Colors.transparent,
         child: Image.asset(emotion),
       ),
     );
@@ -129,21 +129,20 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton:
-      WidgetsBinding.instance.window.viewInsets.bottom > 0.0
-          ? FloatingActionButton(
-        backgroundColor: primaryColor,
-        onPressed: () => FocusScope.of(context).unfocus(),
-        child: const Icon(
-          Icons.keyboard,
-          color: Colors.white,
-          size: AppSize.s35,
-        ),
-      )
-          : const SizedBox.shrink(),
+          WidgetsBinding.instance.window.viewInsets.bottom > 0.0
+              ? FloatingActionButton(
+                  backgroundColor: primaryColor,
+                  onPressed: () => FocusScope.of(context).unfocus(),
+                  child: const Icon(
+                    Icons.keyboard,
+                    color: Colors.white,
+                    size: AppSize.s35,
+                  ),
+                )
+              : const SizedBox.shrink(),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: Builder(
@@ -348,12 +347,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   textAlign: isJustified
                       ? TextAlign.justify
                       : isLeftAligned
-                      ? TextAlign.left
-                      : isRightAligned
-                      ? TextAlign.right
-                      : isCentered
-                      ? TextAlign.center
-                      : TextAlign.justify,
+                          ? TextAlign.left
+                          : isRightAligned
+                              ? TextAlign.right
+                              : isCentered
+                                  ? TextAlign.center
+                                  : TextAlign.justify,
                 ),
               ),
             )
@@ -376,7 +375,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
             // SizedBox(width: 50,),
             SizedBox(
-              width: size.width / 1.9,
+              width: size.width / 2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: emotions.length,
