@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
+import '../../components/snackbar.dart';
 import '../../constants/color.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
@@ -177,6 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context) => PinSetupScreen(
           profileDetails: profileDetails,
           isPinSetBefore: isPinSetBefore,
+          isProfileImageEmpty: isProfileImageEmpty,
         ),
       ),
     );
@@ -188,20 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadProfileDetails();
   }
 
-  // snackbar for error message
-  void showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: primaryColor,
-      ),
-    );
-  }
+
 
   // sync settings
   Future<void> _syncSettings() async {
@@ -231,7 +220,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           isSyncingDone = true;
         });
       } on FirebaseException catch (e) {
-        showSnackBar('Error occurred! ${e.message}');
+        showSnackBar('Error occurred! ${e.message}', context);
       } catch (e) {
         if (kDebugMode) {
           print('An error occurred! $e');
@@ -239,7 +228,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else {
       showSnackBar(
-          'There is nothing to sync. Other settings are synced automatically by default');
+          'There is nothing to sync. Other settings are synced automatically by default',context);
     }
   }
 
