@@ -116,7 +116,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       validator: (value) {
         switch (field) {
           case Field.name:
-            if (value!.isEmpty || value.length < 8 ) {
+            if (value!.isEmpty || value.length < 8) {
               return "FullName is not valid!";
             }
 
@@ -181,11 +181,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         ),
       ),
       backgroundColor: primaryColor,
-      action: SnackBarAction(
-        onPressed: () => Navigator.of(context).pop(),
-        label: 'Dismiss',
-        textColor: Colors.white,
-      ),
     ));
   }
 
