@@ -4,8 +4,8 @@ import '../../resources/route_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
-class AuthAcknowledgementScreen extends StatelessWidget {
-  const AuthAcknowledgementScreen({super.key,});
+class PinSetupSuccessScreen extends StatelessWidget {
+  const PinSetupSuccessScreen({super.key,});
 
 
   @override
@@ -22,10 +22,10 @@ class AuthAcknowledgementScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(AssetManager.success),
+              Image.asset(AssetManager.success2),
               const SizedBox(height: AppSize.s35),
               Text(
-                'Great! You\'ve \nsuccessfully created an account.',
+                'You\'ve successfully sent a new pin.',
                 textAlign: TextAlign.center,
                 style: getHeadingStyle2(),
               ),

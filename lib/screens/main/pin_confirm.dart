@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/values_manager.dart';
+import '../../resources/route_manager.dart';
 
 class PinConfirmScreen extends StatefulWidget {
   const PinConfirmScreen({
@@ -198,7 +200,18 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
           });
           _resetPinSetup();
         } else {
-          showSnackBar('Pin successfully saved. Kudos!', context);
+          try {
+            FirebaseFirestore.instance.collection('users').doc(userId).update({
+              'pin': newPinEntry,
+            });
+            Navigator.of(context).pushReplacementNamed(RouteManager.pinSuccessScreen);
+          } on FirebaseException catch (e) {
+            showSnackBar('Error occurred! ${e.message}', context);
+          } catch (e) {
+            if (kDebugMode) {
+              print('An error occurred! $e');
+            }
+          }
         }
       } else {
         // migrating to pin confirmation
