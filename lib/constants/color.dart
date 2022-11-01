@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 const primaryColor  = Color(0XFFEE3A46);
-const accent = Color(0XFFF26B74);
-const accent2 = Color(0XFFF69CA2);
+const accentColor = Color(0XFFF26B74);
+const accentColor2 = Color(0XFFF69CA2);
 const textBoxLite = Color(0XFFDCDBE7);
 const textBoxDark = Color(0XF484848F);
 const backgroundLite = Color(0XFFEFEEF3);
