@@ -148,9 +148,44 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     );
   }
 
+  //finger print fnc
+  void _fingerPrintHandler() {
+    //Todo: Implement finger print handler
+  }
+
   // finger print
   void _fingerPrint() {
     // Todo: Implement fingerprint
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        height: 200,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Use fingerprint',
+              style: getBoldStyle(
+                color: Colors.black,
+                fontSize: FontSize.s16,
+              ),
+            ),
+            const Text('Touch the fingerprint sensor'),
+            const SizedBox(height:15),
+            IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => _fingerPrintHandler(),
+              icon: const Icon(
+                Icons.fingerprint,
+                color: primaryColor,
+                size: AppSize.s100,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // save pin to firestore
@@ -178,8 +213,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           isPinInCorrect = true;
           isPinSyncing = false;
         });
-      }else{
-        Navigator.of(context).pushReplacementNamed(RouteManager.pinConfirmScreen);
+      } else {
+        Navigator.of(context)
+            .pushReplacementNamed(RouteManager.pinConfirmScreen);
       }
     }
   }
