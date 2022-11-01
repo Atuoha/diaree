@@ -12,7 +12,7 @@ class PinSetupSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // navigate to main screen
     void navigateToMainScreen() {
-      Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+      Navigator.of(context).pushReplacementNamed(RouteManager.settingsScreen);
     }
 
     return Scaffold(
@@ -45,7 +45,7 @@ class PinSetupSuccessScreen extends StatelessWidget {
             ),
           ),
           onPressed: () => navigateToMainScreen(),
-          child: const Text('Jump in'),
+          child: const Text('Go back to settings'),
         ),
       ),
     );
