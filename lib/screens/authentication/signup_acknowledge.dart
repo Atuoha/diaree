@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import '../../resources/assets_manager.dart';
+import '../../resources/route_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
@@ -12,7 +13,7 @@ class AuthAcknowledgementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // navigate to main screen
     void navigateToMainScreen() {
-      Navigator.of(context).pushReplacementNamed("");
+      Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
     }
 
     return Scaffold(

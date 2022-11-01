@@ -374,7 +374,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
             ),
             // SizedBox(width: 50,),
             SizedBox(
-              width: size.width / 1.9,
+              width: size.width / 2,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: emotions.length,

@@ -217,7 +217,7 @@ class HomeScreen extends StatelessWidget {
                                         fontSize: FontSize.s16),
                                   ),
                                   SizedBox(
-                                    width: size.width / 1.52,
+                                    width: size.width / 1.55,
                                     child: Text(
                                       'Today, my summer holidays have begun. I have some plans for sum...',
                                       maxLines: 2,
