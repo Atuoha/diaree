@@ -25,7 +25,7 @@ class PinSetupSuccessScreen extends StatelessWidget {
               Image.asset(AssetManager.success2),
               const SizedBox(height: AppSize.s35),
               Text(
-                'You\'ve successfully sent a new pin.',
+                'You\'ve successfully set a new pin.',
                 textAlign: TextAlign.center,
                 style: getHeadingStyle2(),
               ),

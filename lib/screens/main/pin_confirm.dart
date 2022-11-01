@@ -28,6 +28,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   var currentPinIndex = 0;
   bool isPinInCorrect = false;
   var previousEnteredPin = "";
+  var newPinEntry = "";
   bool isConfirmPinSection = false;
 
   // add value to pin box
@@ -162,13 +163,14 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   void _pinConfirmMigration() {
     setState(() {
       currentPinIndex = 0;
+      isPinSyncing = false;
+      isConfirmPinSection = true;
+      previousEnteredPin =
+          _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
       _firstPin.text = "";
       _secondPin.text = "";
       _thirdPin.text = "";
       _forthPin.text = "";
-      isPinSyncing = false;
-      previousEnteredPin =
-          _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
     });
   }
 
@@ -178,9 +180,6 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
     setState(() {
       isPinSyncing = true;
     });
-    var newPinEntry =
-        _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
-
     if (_firstPin.text.isEmpty ||
         _secondPin.text.isEmpty ||
         _thirdPin.text.isEmpty ||
@@ -192,19 +191,31 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
     } else {
       if (isConfirmPinSection) {
         // the previous pin has been entered
+        setState(() {
+          newPinEntry = _firstPin.text +
+              _secondPin.text +
+              _thirdPin.text +
+              _forthPin.text;
+        });
+
+        // previous pin and new pin does not match
         if (previousEnteredPin != newPinEntry) {
           showSnackBar('Pin Does not match. Try again!', context);
           setState(() {
             isPinInCorrect = true;
             isPinSyncing = false;
           });
+          print(newPinEntry);
+          print(previousEnteredPin);
           _resetPinSetup();
         } else {
+          // send to firebase
           try {
             FirebaseFirestore.instance.collection('users').doc(userId).update({
               'pin': newPinEntry,
             });
-            Navigator.of(context).pushReplacementNamed(RouteManager.pinSuccessScreen);
+            Navigator.of(context)
+                .pushReplacementNamed(RouteManager.pinSuccessScreen);
           } on FirebaseException catch (e) {
             showSnackBar('Error occurred! ${e.message}', context);
           } catch (e) {
@@ -213,8 +224,9 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
             }
           }
         }
+        //
       } else {
-        // migrating to pin confirmation
+        // migrating to pin confirmation -first time pin entry
         _pinConfirmMigration();
       }
     }
@@ -223,6 +235,26 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            padding: const EdgeInsets.only(left: 18),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back,
+            ),
+          ),
+        ),
+        title: Text(
+          'Create PIN',
+          style: getRegularStyle(
+            color: Colors.black,
+            fontWeight: FontWeightManager.medium,
+            fontSize: FontSize.s18,
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         onPressed: () => _savePin(),
