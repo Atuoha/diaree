@@ -116,8 +116,12 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       validator: (value) {
         switch (field) {
           case Field.name:
-            if (value!.isEmpty || value.length < 3) {
-              return "Name is not valid!";
+            if (value!.isEmpty || value.length < 8 ) {
+              return "FullName is not valid!";
+            }
+
+            if (!value.contains(' ')) {
+              return "Surname is also required!";
             }
             break;
 
@@ -211,7 +215,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           password: _passwordController.text.trim(),
         );
         firebase.collection("users").doc(credential.user!.uid).set({
-          "username": _nameController.text.trim(),
+          "fullname": _nameController.text.trim(),
           "email": _emailController.text.trim(),
           "avatar": "None",
           "pin": "0000",
@@ -273,7 +277,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           .doc(logCredential.user!.uid)
           .set(
         {
-          "username": googleUser!.displayName,
+          "fullname": googleUser!.displayName,
           "email": googleUser.email,
           "avatar": googleUser.photoUrl,
           "pin": "0000",

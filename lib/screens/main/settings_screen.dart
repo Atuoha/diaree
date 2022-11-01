@@ -177,6 +177,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context) => PinSetupScreen(
           profileDetails: profileDetails,
           isPinSetBefore: isPinSetBefore,
+          isProfileImageEmpty: isProfileImageEmpty,
         ),
       ),
     );
