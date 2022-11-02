@@ -14,6 +14,8 @@ class ViewNoteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var date =  DateTime.fromMicrosecondsSinceEpoch(note['date'].microsecondsSinceEpoch);
+
     // navigate to edit screen
     void navigateToEdit() {
       Navigator.of(context).push(
@@ -73,7 +75,7 @@ class ViewNoteScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      DateFormat.yMMMMEEEEd().format(note['date']),
+                      DateFormat.yMMMMEEEEd().format(date),
                       style: getRegularStyle(
                         color: Colors.black,
                       ),
@@ -86,6 +88,7 @@ class ViewNoteScreen extends StatelessWidget {
           ),
           Expanded(
             child: Container(
+              width: MediaQuery.of(context).size.width /1,
               padding: const EdgeInsets.symmetric(
                 horizontal: 30,
                 vertical: 40,
@@ -98,7 +101,7 @@ class ViewNoteScreen extends StatelessWidget {
                 ),
               ),
               child: Text(
-                note['title'],
+                note['content'],
                 textAlign: note['isJustified']
                     ? TextAlign.justify
                     : note['isLeftAligned']
