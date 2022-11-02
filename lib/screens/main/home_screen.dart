@@ -50,11 +50,57 @@ class HomeScreen extends StatelessWidget {
           .then((value) => Navigator.of(context).pop());
     }
 
-    // delete entry
-    void deleteEntry(DocumentSnapshot note) {
-      firebase.collection('notes').doc(note.id).delete();
-      showSnackBar('Note deleted successfully!', context);
-      Navigator.of(context).pop();
+    // show dialog for delete
+    void showDeleteOptions(DocumentSnapshot note) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          title: Text('Do you want to delete ${note['title']}?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  firebase.collection('notes').doc(note.id).delete();
+                  showSnackBar('Note deleted successfully!', context);
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(
+                  Icons.delete_forever,
+                  color: primaryColor,
+                  size: AppSize.s25,
+                ),
+                label: Text(
+                  'Yes',
+                  style: getRegularStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeightManager.bold,
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(
+                  Icons.cancel,
+                  color: Colors.black,
+                  size: AppSize.s25,
+                ),
+                label: Text(
+                  'Cancel',
+                  style: getRegularStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeightManager.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     // edit entry
@@ -111,7 +157,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: () => deleteEntry(note),
+                onPressed: () => showDeleteOptions(note),
                 icon: const Icon(
                   Icons.delete,
                   color: primaryColor,
@@ -210,8 +256,12 @@ class HomeScreen extends StatelessWidget {
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
                       return Center(
-                        child: Text('An error occurred!',
-                            style: getRegularStyle(color: Colors.black)),
+                        child: Text(
+                          'An error occurred!',
+                          style: getRegularStyle(
+                            color: Colors.black,
+                          ),
+                        ),
                       );
                     }
 
@@ -238,7 +288,8 @@ class HomeScreen extends StatelessWidget {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           var note = snapshot.data!.docs[index];
-                         var date =  DateTime.fromMicrosecondsSinceEpoch(note['date'].microsecondsSinceEpoch);
+                          var date = DateTime.fromMicrosecondsSinceEpoch(
+                              note['date'].microsecondsSinceEpoch);
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 18.0),
                             child: SizedBox(
@@ -274,7 +325,8 @@ class HomeScreen extends StatelessWidget {
                                             ),
                                             const SizedBox(height: 5),
                                             Text(
-                                              DateFormat.yMMMMEEEEd().format(date),
+                                              DateFormat.yMMMMEEEEd()
+                                                  .format(date),
                                               style: getRegularStyle(
                                                 color: greyShade2,
                                                 fontWeight:

@@ -8,21 +8,29 @@ import 'package:intl/intl.dart';
 import '../../../resources/values_manager.dart';
 import 'edit.dart';
 
-class ViewNoteScreen extends StatelessWidget {
+class ViewNoteScreen extends StatefulWidget {
   const ViewNoteScreen({Key? key, required this.note}) : super(key: key);
   final DocumentSnapshot note;
 
   @override
+  State<ViewNoteScreen> createState() => _ViewNoteScreenState();
+}
+
+class _ViewNoteScreenState extends State<ViewNoteScreen> {
+  @override
   Widget build(BuildContext context) {
-    var date =  DateTime.fromMicrosecondsSinceEpoch(note['date'].microsecondsSinceEpoch);
+    var date = DateTime.fromMicrosecondsSinceEpoch(
+        widget.note['date'].microsecondsSinceEpoch);
 
     // navigate to edit screen
     void navigateToEdit() {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => EditNoteScreen(note: note),
-        ),
-      );
+      Navigator.of(context)
+          .push(
+            MaterialPageRoute(
+              builder: (context) => EditNoteScreen(note: widget.note),
+            ),
+          )
+          .then((value) => setState(() {}));
     }
 
     return Scaffold(
@@ -68,7 +76,7 @@ class ViewNoteScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      note['title'],
+                      widget.note['title'],
                       style: getMediumStyle(
                         color: Colors.black,
                         fontSize: FontSize.s28,
@@ -82,13 +90,13 @@ class ViewNoteScreen extends StatelessWidget {
                     )
                   ],
                 ),
-                Image.asset(note['emotion'])
+                Image.asset(widget.note['emotion'])
               ],
             ),
           ),
           Expanded(
             child: Container(
-              width: MediaQuery.of(context).size.width /1,
+              width: MediaQuery.of(context).size.width / 1,
               padding: const EdgeInsets.symmetric(
                 horizontal: 30,
                 vertical: 40,
@@ -101,27 +109,28 @@ class ViewNoteScreen extends StatelessWidget {
                 ),
               ),
               child: Text(
-                note['content'],
-                textAlign: note['isJustified']
+                widget.note['content'],
+                textAlign: widget.note['isJustified']
                     ? TextAlign.justify
-                    : note['isLeftAligned']
+                    : widget.note['isLeftAligned']
                         ? TextAlign.left
-                        : note['isRightAligned']
+                        : widget.note['isRightAligned']
                             ? TextAlign.right
-                            : note['isJustified']
+                            : widget.note['isJustified']
                                 ? TextAlign.center
                                 : TextAlign.justify,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: FontSize.s16,
-                  fontWeight: note['isBold']
+                  fontWeight: widget.note['isBold']
                       ? FontWeightManager.bold
                       : FontWeightManager.normal,
-                  decoration: note['isUnderlined']
+                  decoration: widget.note['isUnderlined']
                       ? TextDecoration.underline
                       : TextDecoration.none,
-                  fontStyle:
-                      note['isItalics'] ? FontStyle.italic : FontStyle.normal,
+                  fontStyle: widget.note['isItalics']
+                      ? FontStyle.italic
+                      : FontStyle.normal,
                 ),
               ),
             ),
