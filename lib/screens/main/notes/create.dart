@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../components/note_content.dart';
+import '../../../components/note_title.dart';
 import '../../../components/snackbar.dart';
 import '../../../constants/color.dart';
 import '../../../resources/assets_manager.dart';
@@ -143,6 +145,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           'title': _titleController.text.trim(),
           'content': _contentController.text.trim(),
           'emotion': emotions[currentEmotionIndex],
+          'emotion_index': currentEmotionIndex,
           'isBold': isBold,
           'isItalics': isItalics,
           'isUnderlined': isUnderlined,
@@ -182,44 +185,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   ),
                 )
               : const SizedBox.shrink(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: Builder(
-          builder: (context) => IconButton(
-            padding: const EdgeInsets.only(left: 18),
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back,
-            ),
-          ),
-        ),
-        actions: [
-          !isLoading
-              ? IconButton(
-                  padding: const EdgeInsets.only(right: 18),
-                  onPressed: () => saveNote(),
-                  icon: const Icon(
-                    Icons.save,
-                  ),
-                )
-              : const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: SizedBox(
-                    height: 30,
-                    width: 30,
-                    child: CircularProgressIndicator(color: Colors.black),
-                  ),
-                ),
-        ],
-        title: Text(
-          'Create Entry',
-          style: getRegularStyle(
-            color: Colors.black,
-            fontWeight: FontWeightManager.medium,
-            fontSize: FontSize.s18,
-          ),
-        ),
-      ),
+      appBar: buildAppBar(),
       backgroundColor: backgroundLite,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,96 +206,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(DateFormat.yMMMMEEEEd().format(date)),
-                      TextFormField(
-                        controller: _titleController,
-                        maxLines: 1,
-                        textInputAction: TextInputAction.next,
-                        autofocus: true,
-                        decoration: const InputDecoration(
-                          hintText: "Title here...",
-                          filled: false,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        style: getMediumStyle(
-                          color: Colors.black,
-                          fontSize: FontSize.s28,
-                        ),
-                      ),
+                      NoteTitle(titleController: _titleController),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: SizedBox(
-                      height: 70,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () =>
-                                  toggleTextDirection(TextDirection.left),
-                              child: const Icon(
-                                Icons.format_align_left,
-                                size: AppSize.s40,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  toggleTextDirection(TextDirection.center),
-                              child: const Icon(
-                                Icons.format_align_center,
-                                size: AppSize.s40,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  toggleTextDirection(TextDirection.justify),
-                              child: const Icon(
-                                Icons.format_align_justify,
-                                size: AppSize.s40,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  toggleTextDirection(TextDirection.right),
-                              child: const Icon(
-                                Icons.format_align_right,
-                                size: AppSize.s40,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => toggleBold(),
-                              child: const Icon(
-                                Icons.format_bold,
-                                size: AppSize.s50,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => toggleItalics(),
-                              child: const Icon(
-                                Icons.format_italic,
-                                size: AppSize.s50,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => toggleUnderline(),
-                              child: const Icon(
-                                Icons.format_underline,
-                                size: AppSize.s40,
-                              ),
-                            ),
-                          ])),
+                  child: formattingWidget(),
                 )
               ],
             ),
@@ -347,79 +230,158 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   topRight: Radius.circular(60),
                 ),
               ),
-              child: TextFormField(
-                controller: _contentController,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  hintText: "Type here...",
-                  filled: false,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: FontSize.s16,
-                  fontWeight: isBold
-                      ? FontWeightManager.bold
-                      : FontWeightManager.normal,
-                  decoration: isUnderlined
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                  fontStyle: isItalics ? FontStyle.italic : FontStyle.normal,
-                ),
-                textAlign: isJustified
-                    ? TextAlign.justify
-                    : isLeftAligned
-                        ? TextAlign.left
-                        : isRightAligned
-                            ? TextAlign.right
-                            : isCentered
-                                ? TextAlign.center
-                                : TextAlign.justify,
+              child: NoteContent(
+                contentController: _contentController,
+                isBold: isBold,
+                isUnderlined: isUnderlined,
+                isItalics: isItalics,
+                isJustified: isJustified,
+                isLeftAligned: isLeftAligned,
+                isRightAligned: isRightAligned,
+                isCentered: isCentered,
               ),
             ),
           )
         ],
       ),
-      bottomSheet: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        height: 55,
-        color: backgroundLite,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Mood',
-              style: getMediumStyle(
-                color: Colors.black,
-                fontSize: FontSize.s16,
-              ),
-            ),
-            // SizedBox(width: 50,),
-            SizedBox(
-              width: size.width / 2,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: emotions.length,
-                itemBuilder: (context, index) => emotionBox(
-                  emotions[index],
-                  index,
+      bottomSheet: bottomEmotionSelector(size),
+    );
+  }
+
+  // EXTRACTED METHODS
+
+  // appbar
+  AppBar buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      leading: Builder(
+        builder: (context) => IconButton(
+          padding: const EdgeInsets.only(left: 18),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
+        ),
+      ),
+      actions: [
+        !isLoading
+            ? IconButton(
+                padding: const EdgeInsets.only(right: 18),
+                onPressed: () => saveNote(),
+                icon: const Icon(
+                  Icons.save,
+                ),
+              )
+            : const Padding(
+                padding: EdgeInsets.all(10.0),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularProgressIndicator(color: Colors.black),
                 ),
               ),
-            ),
-          ],
+      ],
+      title: Text(
+        'Create Entry',
+        style: getRegularStyle(
+          color: Colors.black,
+          fontWeight: FontWeightManager.medium,
+          fontSize: FontSize.s18,
         ),
+      ),
+    );
+  }
+
+  // Container for emotions
+  Container bottomEmotionSelector(Size size) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      height: 55,
+      color: backgroundLite,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Mood',
+            style: getMediumStyle(
+              color: Colors.black,
+              fontSize: FontSize.s16,
+            ),
+          ),
+          // SizedBox(width: 50,),
+          SizedBox(
+            width: size.width / 2,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: emotions.length,
+              itemBuilder: (context, index) => emotionBox(
+                emotions[index],
+                index,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // sized box that hold formatting tools
+  SizedBox formattingWidget() {
+    return SizedBox(
+      height: 70,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.left),
+            child: const Icon(
+              Icons.format_align_left,
+              size: AppSize.s40,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.center),
+            child: const Icon(
+              Icons.format_align_center,
+              size: AppSize.s40,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.justify),
+            child: const Icon(
+              Icons.format_align_justify,
+              size: AppSize.s40,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.right),
+            child: const Icon(
+              Icons.format_align_right,
+              size: AppSize.s40,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleBold(),
+            child: const Icon(
+              Icons.format_bold,
+              size: AppSize.s50,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleItalics(),
+            child: const Icon(
+              Icons.format_italic,
+              size: AppSize.s50,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleUnderline(),
+            child: const Icon(
+              Icons.format_underline,
+              size: AppSize.s40,
+            ),
+          ),
+        ],
       ),
     );
   }

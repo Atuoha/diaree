@@ -1,5 +1,12 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../../../components/note_content.dart';
+import '../../../components/note_title.dart';
+import '../../../components/snackbar.dart';
 import '../../../constants/color.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
@@ -8,7 +15,8 @@ import '../../../resources/values_manager.dart';
 import 'package:intl/intl.dart';
 
 class EditNoteScreen extends StatefulWidget {
-  const EditNoteScreen({Key? key}) : super(key: key);
+  const EditNoteScreen({Key? key, required this.note}) : super(key: key);
+  final DocumentSnapshot note;
 
   @override
   State<EditNoteScreen> createState() => _EditNoteScreenState();
@@ -22,11 +30,11 @@ enum TextDirection {
 }
 
 class _EditNoteScreenState extends State<EditNoteScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   final uId = FirebaseAuth.instance.currentUser!.uid;
-  final date = DateTime.now();
+  var date = DateTime.now();
+  bool isLoading = false;
 
   bool isBold = false;
   bool isItalics = false;
@@ -35,6 +43,23 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   bool isLeftAligned = false;
   bool isRightAligned = false;
   bool isCentered = false;
+
+  // set details
+  void setNoteDetails() {
+    setState(() {
+      _titleController.text = widget.note['title'];
+      _contentController.text = widget.note['content'];
+      date = widget.note['date'];
+      isBold = widget.note['isBold'];
+      isItalics = widget.note['isItalics'];
+      isUnderlined = widget.note['isUnderlined'];
+      isJustified = widget.note['isJustified'];
+      isLeftAligned = widget.note['isLeftAligned'];
+      isRightAligned = widget.note['isRightAligned'];
+      isCentered = widget.note['isCentered'];
+      currentEmotionIndex = widget.note['emotion_index'];
+    });
+  }
 
   // toggle bold
   void toggleBold() {
@@ -98,11 +123,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     }
   }
 
-  // save edit
-  void saveNote() {
-    // Todo: Implement Edit
-  }
-
   var currentEmotionIndex = 0;
   final List<String> emotions = [
     AssetManager.happy,
@@ -125,9 +145,59 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     );
   }
 
+  // save note
+  void saveNote() {
+    FocusScope.of(context).unfocus();
+
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty) {
+      showSnackBar('OPPS! Title or content can not be empty!', context);
+      return;
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        FirebaseFirestore.instance
+            .collection('notes')
+            .doc(widget.note.id)
+            .update({
+          'uid': uId,
+          'date': date,
+          'title': _titleController.text.trim(),
+          'content': _contentController.text.trim(),
+          'emotion': emotions[currentEmotionIndex],
+          'emotion_index': currentEmotionIndex,
+          'isBold': isBold,
+          'isItalics': isItalics,
+          'isUnderlined': isUnderlined,
+          'isJustified': isJustified,
+          'isLeftAligned': isLeftAligned,
+          'isRightAligned': isRightAligned,
+          'isCentered': isCentered,
+        });
+        Timer(const Duration(seconds: 4), () {
+          Navigator.of(context).pop();
+        });
+      } on FirebaseException catch (e) {
+        showSnackBar('Opps! An error occurred. ${e.message}', context);
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setNoteDetails();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton:
@@ -142,250 +212,203 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   ),
                 )
               : const SizedBox.shrink(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: Builder(
-          builder: (context) => IconButton(
-            padding: const EdgeInsets.only(left: 18),
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(
-              Icons.arrow_back,
+      appBar: buildAppBar(),
+      backgroundColor: backgroundLite,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0,
+                    vertical: 5,
+                  ),
+                  height: 83,
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(DateFormat.yMMMMEEEEd().format(date)),
+                      NoteTitle(titleController: _titleController),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: formattingWidget(),
+                )
+              ],
             ),
           ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 40,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(60),
+                  topRight: Radius.circular(60),
+                ),
+              ),
+              child: NoteContent(
+                contentController: _contentController,
+                isBold: isBold,
+                isUnderlined: isUnderlined,
+                isItalics: isItalics,
+                isJustified: isJustified,
+                isLeftAligned: isLeftAligned,
+                isRightAligned: isRightAligned,
+                isCentered: isCentered,
+              ),
+            ),
+          )
+        ],
+      ),
+      bottomSheet: bottomEmotionSelector(size),
+    );
+  }
+
+  // EXTRACTED METHODS
+
+  // appbar
+  AppBar buildAppBar() {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      leading: Builder(
+        builder: (context) => IconButton(
+          padding: const EdgeInsets.only(left: 18),
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(
+            Icons.arrow_back,
+          ),
         ),
-        actions: [
-          IconButton(
-            padding: const EdgeInsets.only(right: 18),
-            onPressed: () => saveNote(),
-            icon: const Icon(
-              Icons.save,
+      ),
+      actions: [
+        !isLoading
+            ? IconButton(
+                padding: const EdgeInsets.only(right: 18),
+                onPressed: () => saveNote(),
+                icon: const Icon(
+                  Icons.save,
+                ),
+              )
+            : const Padding(
+                padding: EdgeInsets.all(10.0),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularProgressIndicator(color: Colors.black),
+                ),
+              ),
+      ],
+      title: Text(
+        'Edit Entry',
+        style: getRegularStyle(
+          color: Colors.black,
+          fontWeight: FontWeightManager.medium,
+          fontSize: FontSize.s18,
+        ),
+      ),
+    );
+  }
+
+  // Container for emotions
+  Container bottomEmotionSelector(Size size) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      height: 55,
+      color: backgroundLite,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Mood',
+            style: getMediumStyle(
+              color: Colors.black,
+              fontSize: FontSize.s16,
+            ),
+          ),
+          // SizedBox(width: 50,),
+          SizedBox(
+            width: size.width / 2,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: emotions.length,
+              itemBuilder: (context, index) => emotionBox(
+                emotions[index],
+                index,
+              ),
             ),
           ),
         ],
-        title: Text(
-          'Create Entry',
-          style: getRegularStyle(
-            color: Colors.black,
-            fontWeight: FontWeightManager.medium,
-            fontSize: FontSize.s18,
+      ),
+    );
+  }
+
+  // sized box that hold formatting tools
+  SizedBox formattingWidget() {
+    return SizedBox(
+      height: 70,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.left),
+            child: const Icon(
+              Icons.format_align_left,
+              size: AppSize.s40,
+            ),
           ),
-        ),
-      ),
-      backgroundColor: backgroundLite,
-      body: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30.0,
-                      vertical: 5,
-                    ),
-                    height: 83,
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(DateFormat.yMMMMEEEEd().format(date)),
-                        TextFormField(
-                          controller: _titleController,
-                          maxLines: null,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Title can not be empty";
-                            }
-                            return null;
-                          },
-                          textInputAction: TextInputAction.next,
-                          autofocus: true,
-                          decoration: const InputDecoration(
-                            hintText: "Title here...",
-                            filled: false,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: getMediumStyle(
-                            color: Colors.black,
-                            fontSize: FontSize.s28,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: SizedBox(
-                        height: 70,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              GestureDetector(
-                                onTap: () =>
-                                    toggleTextDirection(TextDirection.left),
-                                child: const Icon(
-                                  Icons.format_align_left,
-                                  size: AppSize.s40,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () =>
-                                    toggleTextDirection(TextDirection.center),
-                                child: const Icon(
-                                  Icons.format_align_center,
-                                  size: AppSize.s40,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () =>
-                                    toggleTextDirection(TextDirection.justify),
-                                child: const Icon(
-                                  Icons.format_align_justify,
-                                  size: AppSize.s40,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () =>
-                                    toggleTextDirection(TextDirection.right),
-                                child: const Icon(
-                                  Icons.format_align_right,
-                                  size: AppSize.s40,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => toggleBold(),
-                                child: const Icon(
-                                  Icons.format_bold,
-                                  size: AppSize.s50,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => toggleItalics(),
-                                child: const Icon(
-                                  Icons.format_italic,
-                                  size: AppSize.s50,
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () => toggleUnderline(),
-                                child: const Icon(
-                                  Icons.format_underline,
-                                  size: AppSize.s40,
-                                ),
-                              ),
-                            ])),
-                  )
-                ],
-              ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.center),
+            child: const Icon(
+              Icons.format_align_center,
+              size: AppSize.s40,
             ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 40,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(60),
-                    topRight: Radius.circular(60),
-                  ),
-                ),
-                child: TextFormField(
-                  controller: _contentController,
-                  maxLines: null,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Content can not be empty";
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.multiline,
-                  decoration: const InputDecoration(
-                    hintText: "Type here...",
-                    filled: false,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: FontSize.s16,
-                    fontWeight: isBold
-                        ? FontWeightManager.bold
-                        : FontWeightManager.normal,
-                    decoration: isUnderlined
-                        ? TextDecoration.underline
-                        : TextDecoration.none,
-                    fontStyle: isItalics ? FontStyle.italic : FontStyle.normal,
-                  ),
-                  textAlign: isJustified
-                      ? TextAlign.justify
-                      : isLeftAligned
-                          ? TextAlign.left
-                          : isRightAligned
-                              ? TextAlign.right
-                              : isCentered
-                                  ? TextAlign.center
-                                  : TextAlign.justify,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-      bottomSheet: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        height: 55,
-        color: backgroundLite,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Mood',
-              style: getMediumStyle(
-                color: Colors.black,
-                fontSize: FontSize.s16,
-              ),
+          ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.justify),
+            child: const Icon(
+              Icons.format_align_justify,
+              size: AppSize.s40,
             ),
-            // SizedBox(width: 50,),
-            SizedBox(
-              width: size.width / 2,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: emotions.length,
-                itemBuilder: (context, index) => emotionBox(
-                  emotions[index],
-                  index,
-                ),
-              ),
+          ),
+          GestureDetector(
+            onTap: () => toggleTextDirection(TextDirection.right),
+            child: const Icon(
+              Icons.format_align_right,
+              size: AppSize.s40,
             ),
-          ],
-        ),
+          ),
+          GestureDetector(
+            onTap: () => toggleBold(),
+            child: const Icon(
+              Icons.format_bold,
+              size: AppSize.s50,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleItalics(),
+            child: const Icon(
+              Icons.format_italic,
+              size: AppSize.s50,
+            ),
+          ),
+          GestureDetector(
+            onTap: () => toggleUnderline(),
+            child: const Icon(
+              Icons.format_underline,
+              size: AppSize.s40,
+            ),
+          ),
+        ],
       ),
     );
   }

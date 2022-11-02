@@ -8,6 +8,8 @@ class AssetManager{
   static const String splashImage2 = "$imagePath/sp_2.png";
   static const String splashImage3 = "$imagePath/sp_3.png";
 
+  static const String empty = "$imagePath/empty.png";
+
   static const String success = "$imagePath/success.png";
   static const String success2 = "$imagePath/success2.png";
 

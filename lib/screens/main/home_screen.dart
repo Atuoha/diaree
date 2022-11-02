@@ -1,5 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diaree/components/loading.dart';
 import 'package:diaree/resources/styles_manager.dart';
+import 'package:diaree/screens/main/notes/edit.dart';
+import 'package:diaree/screens/main/notes/view.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../components/snackbar.dart';
 import '../../constants/color.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
@@ -11,6 +17,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final firebase = FirebaseFirestore.instance;
+    Stream<QuerySnapshot> notesStream =
+        firebase.collection('notes').snapshots();
+
     Size size = MediaQuery.of(context).size;
 
     // navigate to settings
@@ -23,41 +33,43 @@ class HomeScreen extends StatelessWidget {
       //Todo: Implement search
     }
 
-    // navigate to create new note
-    void navigateToCreateNewNote() {
-      Navigator.of(context)
-          .pushNamed(RouteManager.createNoteScreen)
-          .then((value) => Navigator.of(context).pop());
-    }
-
     // navigate to edit screen
     void createNew() {
       Navigator.of(context).pushNamed(RouteManager.createNoteScreen);
     }
 
     // view entry
-    void viewEntry() {
+    void viewEntry(DocumentSnapshot note) {
       // Todo: Implement view Entry
       Navigator.of(context)
-          .pushNamed(RouteManager.viewNoteScreen)
+          .push(
+            MaterialPageRoute(
+              builder: (context) => ViewNoteScreen(note: note),
+            ),
+          )
           .then((value) => Navigator.of(context).pop());
     }
 
     // delete entry
-    void deleteEntry() {
-      // Todo: Implement delete entry
+    void deleteEntry(DocumentSnapshot note) {
+      firebase.collection('notes').doc(note.id).delete();
+      showSnackBar('Note deleted successfully!', context);
+      Navigator.of(context).pop();
     }
 
     // edit entry
-    void editEntry() {
-      // Todo: Implement edit entry
+    void editEntry(DocumentSnapshot note) {
       Navigator.of(context)
-          .pushNamed(RouteManager.editNoteScreen)
+          .push(
+            MaterialPageRoute(
+              builder: (context) => EditNoteScreen(note: note),
+            ),
+          )
           .then((value) => Navigator.of(context).pop());
     }
 
     // show options
-    void showOptions() {
+    void showOptions(DocumentSnapshot note) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -69,7 +81,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextButton.icon(
-                onPressed: () => viewEntry(),
+                onPressed: () => viewEntry(note),
                 icon: const Icon(
                   Icons.visibility,
                   color: Colors.black,
@@ -84,7 +96,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: () => editEntry(),
+                onPressed: () => editEntry(note),
                 icon: const Icon(
                   Icons.edit,
                   color: Colors.black,
@@ -99,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: () => deleteEntry(),
+                onPressed: () => deleteEntry(note),
                 icon: const Icon(
                   Icons.delete,
                   color: primaryColor,
@@ -192,66 +204,102 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSize.s20),
             Expanded(
-                // height:300,
-                child: ListView(
-              children: List.generate(
-                99,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 18.0),
-                  child: SizedBox(
-                    height: size.height * 0.15,
-                    child: GestureDetector(
-                      onTap: () => showOptions(),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Summer Vacation!',
-                                    style: getBoldStyle(
-                                        color: Colors.black,
-                                        fontSize: FontSize.s16),
-                                  ),
-                                  SizedBox(
-                                    width: size.width / 1.55,
-                                    child: Text(
-                                      'Today, my summer holidays have begun. I have some plans for sum...',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.justify,
-                                      style: getRegularStyle(
-                                        color: Colors.black,
-                                      ),
+              // height:300,
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: notesStream,
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text('An error occurred!',
+                            style: getRegularStyle(color: Colors.black)),
+                      );
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: Loading());
+                    }
+
+                    if (snapshot.data!.docs.isEmpty) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(AssetManager.empty),
+                          Text(
+                            'Notes are empty',
+                            style: getRegularStyle(
+                              color: greyShade2,
+                            ),
+                          )
+                        ],
+                      );
+                    }
+
+                    return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          var note = snapshot.data!.docs[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 18.0),
+                            child: SizedBox(
+                              height: size.height * 0.15,
+                              child: GestureDetector(
+                                onTap: () => showOptions(note),
+                                child: Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              note['title'],
+                                              style: getBoldStyle(
+                                                  color: Colors.black,
+                                                  fontSize: FontSize.s16),
+                                            ),
+                                            SizedBox(
+                                              width: size.width / 1.55,
+                                              child: Text(
+                                                note['content'],
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.justify,
+                                                style: getRegularStyle(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              DateFormat.yMMMMEEEEd()
+                                                  .format(note['date']),
+                                              style: getRegularStyle(
+                                                color: greyShade2,
+                                                fontWeight:
+                                                    FontWeightManager.medium,
+                                                fontSize: FontSize.s12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Image.asset(note['emotion'])
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    '17th April 2002',
-                                    style: getRegularStyle(
-                                      color: greyShade2,
-                                      fontWeight: FontWeightManager.medium,
-                                      fontSize: FontSize.s12,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              Image.asset(AssetManager.happy)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ))
+                            ),
+                          );
+                        });
+                  }),
+            )
           ],
         ),
       ),
     );
   }
 }
+
+//

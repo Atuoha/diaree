@@ -1,23 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/constants/color.dart';
-import 'package:diaree/resources/assets_manager.dart';
 import 'package:diaree/resources/font_manager.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import "package:flutter/material.dart";
+import 'package:intl/intl.dart';
 
-import '../../../resources/route_manager.dart';
 import '../../../resources/values_manager.dart';
+import 'edit.dart';
 
 class ViewNoteScreen extends StatelessWidget {
-  const ViewNoteScreen({Key? key}) : super(key: key);
+  const ViewNoteScreen({Key? key, required this.note}) : super(key: key);
+  final DocumentSnapshot note;
 
   @override
   Widget build(BuildContext context) {
     // navigate to edit screen
     void navigateToEdit() {
-      // Todo: Implement edit
-      Navigator.of(context)
-          .pushNamed(RouteManager.editNoteScreen)
-          .then((value) => Navigator.of(context).pop());
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => EditNoteScreen(note: note),
+        ),
+      );
     }
 
     return Scaffold(
@@ -63,27 +66,30 @@ class ViewNoteScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Summer\nVacation!',
+                      note['title'],
                       style: getMediumStyle(
                         color: Colors.black,
                         fontSize: FontSize.s28,
                       ),
                     ),
                     Text(
-                      '17th April 2002',
+                      DateFormat.yMMMMEEEEd().format(note['date']),
                       style: getRegularStyle(
                         color: Colors.black,
                       ),
                     )
                   ],
                 ),
-                Image.asset(AssetManager.happy)
+                Image.asset(note['emotion'])
               ],
             ),
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30,vertical:40,),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 40,
+              ),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -92,11 +98,27 @@ class ViewNoteScreen extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "Today, my summer holidays have begun. I have some plans for summer vacation. I'm planning to go to a wildlife sanctuary and for boating in a lake. I just don't want to spend a single moment idly and definitely want to enjoy every bit of these holidays. \n\nLast year, I did not plan my vacations, but this year, I will do everything to make them interesting. I now need to go. I'm excited and eagerly looking forward to my holidays.",
-                textAlign: TextAlign.justify,
-                style: getRegularStyle(
+                note['title'],
+                textAlign: note['isJustified']
+                    ? TextAlign.justify
+                    : note['isLeftAligned']
+                        ? TextAlign.left
+                        : note['isRightAligned']
+                            ? TextAlign.right
+                            : note['isJustified']
+                                ? TextAlign.center
+                                : TextAlign.justify,
+                style: TextStyle(
                   color: Colors.black,
                   fontSize: FontSize.s16,
+                  fontWeight: note['isBold']
+                      ? FontWeightManager.bold
+                      : FontWeightManager.normal,
+                  decoration: note['isUnderlined']
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                  fontStyle:
+                      note['isItalics'] ? FontStyle.italic : FontStyle.normal,
                 ),
               ),
             ),
