@@ -130,12 +130,12 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => createNew(),
-          icon: const Icon(
-            Icons.edit,
-          ),
-        ),
+        // leading: IconButton(
+        //   onPressed: () => createNew(),
+        //   icon: const Icon(
+        //     Icons.edit,
+        //   ),
+        // ),
         actions: [
           IconButton(
             onPressed: () => navigateToSettings(),
