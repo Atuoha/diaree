@@ -225,9 +225,9 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Image.asset(AssetManager.empty),
                           Text(
-                            'Notes are empty',
+                            'Notes are empty!',
                             style: getRegularStyle(
-                              color: greyShade2,
+                              color: Colors.grey,
                             ),
                           )
                         ],
@@ -238,6 +238,7 @@ class HomeScreen extends StatelessWidget {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           var note = snapshot.data!.docs[index];
+                         var date =  DateTime.fromMicrosecondsSinceEpoch(note['date'].microsecondsSinceEpoch);
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 18.0),
                             child: SizedBox(
@@ -273,8 +274,7 @@ class HomeScreen extends StatelessWidget {
                                             ),
                                             const SizedBox(height: 5),
                                             Text(
-                                              DateFormat.yMMMMEEEEd()
-                                                  .format(note['date']),
+                                              DateFormat.yMMMMEEEEd().format(date),
                                               style: getRegularStyle(
                                                 color: greyShade2,
                                                 fontWeight:

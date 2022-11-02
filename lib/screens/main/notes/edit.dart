@@ -49,7 +49,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
     setState(() {
       _titleController.text = widget.note['title'];
       _contentController.text = widget.note['content'];
-      date = widget.note['date'];
+      date = DateTime.fromMicrosecondsSinceEpoch(
+          widget.note['date'].microsecondsSinceEpoch);
       isBold = widget.note['isBold'];
       isItalics = widget.note['isItalics'];
       isUnderlined = widget.note['isUnderlined'];
