@@ -3,6 +3,7 @@ import 'package:diaree/components/loading.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import 'package:diaree/screens/main/notes/edit.dart';
 import 'package:diaree/screens/main/notes/view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../components/snackbar.dart';
@@ -18,8 +19,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebase = FirebaseFirestore.instance;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
     Stream<QuerySnapshot> notesStream =
-        firebase.collection('notes').snapshots();
+        firebase.collection('notes').where('uid',isEqualTo:userId).snapshots();
 
     Size size = MediaQuery.of(context).size;
 
