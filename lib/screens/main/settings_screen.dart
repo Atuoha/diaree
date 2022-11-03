@@ -69,12 +69,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
     }
 
-    if (details['avatar'] != "None") {
-      setState(() {
-        profileImgUrl = details['avatar'];
-        isProfileImageEmpty = false;
-      });
-    }
     setState(() {
       profileDetails = details;
     });

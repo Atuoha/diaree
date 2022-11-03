@@ -4,6 +4,7 @@ import 'package:diaree/screens/main/welcome.dart';
 import 'package:diaree/screens/splash/splash.dart';
 
 import '../screens/authentication/forgot_password.dart';
+
 import '../screens/authentication/signup_acknowledge.dart';
 import '../screens/main/home_screen.dart';
 import '../screens/main/pin_confirm.dart';
@@ -22,6 +23,7 @@ class RouteManager {
   static const String pinSetup = '/pinSetup';
   static const String pinConfirmScreen = '/pinConfirm';
   static const String pinSuccessScreen = '/pinSuccess';
+
 }
 
 final routes = {
