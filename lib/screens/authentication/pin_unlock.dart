@@ -1,31 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
-import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/route_manager.dart';
 import '../../resources/values_manager.dart';
 
-class PinSetupScreen extends StatefulWidget {
-  const PinSetupScreen({
+class PinUnlockScreen extends StatefulWidget {
+  const PinUnlockScreen({
     Key? key,
-    required this.profileDetails,
-    required this.isPinSetBefore,
-    required this.isProfileImageEmpty,
+    required this.userPin,
   }) : super(key: key);
-  final DocumentSnapshot? profileDetails;
-  final bool isPinSetBefore;
-  final bool isProfileImageEmpty;
+  final String userPin;
 
   @override
-  State<PinSetupScreen> createState() => _PinSetupScreenState();
+  State<PinUnlockScreen> createState() => _PinUnlockScreenState();
 }
 
-class _PinSetupScreenState extends State<PinSetupScreen> {
+class _PinUnlockScreenState extends State<PinUnlockScreen> {
   final userId = FirebaseAuth.instance.currentUser!.uid;
   bool isPinSyncing = false;
   final _firstPin = TextEditingController();
@@ -54,7 +47,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     }
     setState(() {
       if (currentPinIndex <= 4) currentPinIndex += 1;
-      print(currentPinIndex);
     });
   }
 
@@ -77,7 +69,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     }
     setState(() {
       if (currentPinIndex > 0) currentPinIndex -= 1;
-      print(currentPinIndex);
     });
   }
 
@@ -172,7 +163,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               ),
             ),
             const Text('Touch the fingerprint sensor'),
-            const SizedBox(height:15),
+            const SizedBox(height: 15),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () => _fingerPrintHandler(),
@@ -188,7 +179,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     );
   }
 
-
   // reset pin setup
   void _resetPinSetup() {
     setState(() {
@@ -200,13 +190,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
     });
   }
 
-  // save pin to firestore
-  void _savePin() {
-    // Todo Implement save pin
+  // authenticate pin
+  void _pinAuthenticateHandler() {
     setState(() {
       isPinSyncing = true;
     });
-    var oldPin = widget.profileDetails!['pin'];
     var newPinEntry =
         _firstPin.text + _secondPin.text + _thirdPin.text + _forthPin.text;
 
@@ -214,34 +202,30 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         _secondPin.text.isEmpty ||
         _thirdPin.text.isEmpty ||
         _forthPin.text.isEmpty) {
-      showSnackBar('4 Pin digits are  needed!', context);
+      showSnackBar('4 Pin digits are  needed! Retry', context);
       setState(() {
         isPinSyncing = false;
       });
     } else {
-      if (oldPin != newPinEntry) {
-        showSnackBar('Incorrect old pin. Try again', context);
+      if (widget.userPin != newPinEntry) {
+        showSnackBar('Incorrect pin!. Try again', context);
         setState(() {
           isPinInCorrect = true;
           isPinSyncing = false;
         });
         _resetPinSetup();
       } else {
-        Navigator.of(context)
-            .pushReplacementNamed(RouteManager.pinConfirmScreen);
+        Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final username = widget.profileDetails!['fullname'];
-    final usernameSplit = username.split(' ');
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
-        onPressed: () => _savePin(),
+        onPressed: () => _pinAuthenticateHandler(),
         child: isPinSyncing
             ? const CircularProgressIndicator(
                 color: Colors.white,
@@ -258,40 +242,26 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              widget.isProfileImageEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(AssetManager.avatarBig),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        widget.profileDetails!['avatar'],
-                        width: 100,
-                      ),
-                    ),
-              const SizedBox(height: 10),
-              Text(
-                'Welcome, ${usernameSplit[1]}',
-                style: getMediumStyle(
-                  color: Colors.black,
-                  fontSize: FontSize.s30,
+              Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                const Icon(Icons.lock, size: AppSize.s30),
+                const SizedBox(width: 10),
+                Text(
+                  'Enter Unlock Pin',
+                  style: getMediumStyle(
+                    color: Colors.black,
+                    fontSize: FontSize.s30,
+                  ),
                 ),
-              ),
+              ]),
               isPinInCorrect
                   ? Text(
                       'You\'ve entered an incorrect pin. Try again!',
                       style: getRegularStyle(color: accentColor),
                     )
-                  : widget.isPinSetBefore
-                      ? Text(
-                          'Please enter your passcode',
-                          style: getRegularStyle(color: Colors.black),
-                        )
-                      : Text(
-                          'Enter default password: 0000',
-                          style: getRegularStyle(color: Colors.black),
-                        ),
+                  : Text(
+                      'Please enter your pin to unlock',
+                      style: getRegularStyle(color: Colors.black),
+                    ),
               const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
