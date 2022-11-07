@@ -25,6 +25,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final firebaseAuth = FirebaseAuth.instance;
+  final firebase = FirebaseFirestore.instance;
   final userId = FirebaseAuth.instance.currentUser!.uid;
   bool isProfileImageEmpty = true;
   String profileImgUrl = AssetManager.avatarSmall;
@@ -51,8 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // load profile details
   Future<void> _loadProfileDetails() async {
-    var details =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    var details = await firebase.collection('users').doc(userId).get();
 
     // checking if avatar is set
     if (details['avatar'] != "None") {
@@ -184,8 +184,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadProfileDetails();
   }
 
-
-
   // sync settings
   Future<void> _syncSettings() async {
     if (pickedProfileImage != null) {
@@ -222,7 +220,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else {
       showSnackBar(
-          'There is nothing to sync. Other settings are synced automatically by default',context);
+          'There is nothing to sync. Other settings are synced automatically by default',
+          context);
     }
   }
 
@@ -289,10 +288,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 isDarkTheme,
                 settingsData!.toggleIsDarkTheme,
               ),
-              kSwitchTile(
-                'Biometrics/PIN Lock',
-                isPinSet,
-                settingsData!.toggleIsPinSet,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isPinSet,
+                onChanged: (value) {
+                  settingsData!.toggleIsPinSet();
+                  firebase.collection('users').doc(userId).update({
+                    'pin_lock': value,
+                  });
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Biometrics/PIN Lock',
+                  style: style,
+                ),
               ),
               kSwitchTile(
                 'Sync Automatically',

@@ -26,7 +26,6 @@ TextStyle getRegularStyle({
     FontConstants.fontFamily,
     color,
     fontWeight,
-
   );
 }
 
@@ -46,6 +45,7 @@ TextStyle getHeadingStyle2({fontSize = FontSize.s30}){
     color: Colors.black,
   );
 }
+
 
 // light fontstyle
 TextStyle getLightStyle({
