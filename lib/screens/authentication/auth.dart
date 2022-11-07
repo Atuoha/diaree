@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import '../../components/loading.dart';
 import '../../constants/color.dart';
+import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/route_manager.dart';
@@ -312,7 +314,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var backgroundColor = Provider.of<SettingsData>(context).getThemeBackgroundColor;
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(

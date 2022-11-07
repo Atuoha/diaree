@@ -32,7 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool isProfileImageEmpty = true;
   String profileImgUrl = AssetManager.avatarSmall;
   File? pickedProfileImage;
-  SettingsData? settingsData;
   bool isDarkTheme = false;
   bool isPinSet = false;
   bool isSyncAutomatically = false;
@@ -43,12 +42,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // loading settings from provider
   void _loadSettings() {
-    var settings = Provider.of<SettingsData>(context);
-    setState(() {
-      settingsData = settings;
-      isDarkTheme = settingsData!.getIsDarkTheme;
-      isPinSet = settingsData!.getIsPinSet;
-      isSyncAutomatically = settingsData!.getIsSyncAutomatically;
+    SharedPreferences.getInstance().then((prefs) {
+      var isDark = prefs.getBool('isDark') ?? false;
+      var isLocked = prefs.getBool('isLocked') ?? false;
+      var isSync = prefs.getBool('isSync') ?? false;
+
+      setState(() {
+        isDarkTheme = isDark;
+        isPinSet = isLocked;
+        isSyncAutomatically = isSync;
+      });
     });
   }
 
@@ -141,17 +144,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // style for all list tiles
-  TextStyle style = getMediumStyle(
-    color: Colors.black,
-    fontSize: FontSize.s18,
-  );
+
 
   // switch list tile
   SwitchListTile kSwitchTile(
     String title,
     bool value,
     Function action,
+      Color color,
   ) {
     return SwitchListTile(
       activeTrackColor: accentColor,
@@ -162,7 +162,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       contentPadding: EdgeInsets.zero,
       title: Text(
         title,
-        style: style,
+        style: getMediumStyle(
+          color: color,
+          fontSize: FontSize.s18,
+        ),
       ),
     );
   }
@@ -222,8 +225,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else {
       showSnackBar(
-          'There is nothing to sync. Other settings are synced automatically by default',
-          context);
+        'There is nothing to sync. Other settings are synced automatically by default',
+        context,
+      );
     }
   }
 
@@ -236,8 +240,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    SettingsData settingsData = Provider.of<SettingsData>(context);
+    var theme =
+        Provider.of<SettingsData>(context);
+
+    // style for all list tiles
+    TextStyle style = getMediumStyle(
+      color: theme.getThemeColor,
+      fontSize: FontSize.s18,
+    );
 
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: Builder(
@@ -252,7 +266,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(
           'Settings',
           style: getRegularStyle(
-            color: Colors.black,
+            color: theme.getThemeColor,
             fontWeight: FontWeightManager.medium,
             fontSize: FontSize.s18,
           ),
@@ -266,7 +280,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Container(
           height: size.height / 1.35,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.getThemeColor2,
             borderRadius: BorderRadius.circular(AppSize.s30),
           ),
           padding: const EdgeInsets.fromLTRB(15, 20, 0, 0),
@@ -289,12 +303,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 inactiveTrackColor: textBoxLite,
                 activeColor: Colors.white,
                 value: isDarkTheme,
-                onChanged: (value) async{
-                  settingsData!.toggleIsDarkTheme();
-                  settingsData!.setTheme(
-                    value ? getLightTheme() : getDarkTheme(),
+                onChanged: (value) async {
+                  settingsData.setTheme(
+                    value ? getDarkTheme() : getLightTheme(),
                   );
-                  var prefs =  await SharedPreferences.getInstance();
+                  var prefs = await SharedPreferences.getInstance();
                   prefs.setBool('isDark', value);
                 },
                 contentPadding: EdgeInsets.zero,
@@ -308,10 +321,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 inactiveTrackColor: textBoxLite,
                 activeColor: Colors.white,
                 value: isPinSet,
-                onChanged: (value) async{
-                  settingsData!.toggleIsPinSet();
-                  var prefs = await  SharedPreferences.getInstance();
-                  prefs.setBool('isLocked', value);
+                onChanged: (value) async {
+                  var prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    prefs.setBool('isLocked', value);
+                    isPinSet = value;
+                  });
                   // firebase.collection('users').doc(userId).update({
                   //   'pin_lock': value,
                   // });
@@ -322,10 +337,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: style,
                 ),
               ),
-              kSwitchTile(
-                'Sync Automatically',
-                isSyncAutomatically,
-                settingsData!.toggleIsSyncAutomatically,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isSyncAutomatically,
+                onChanged: (value) async {
+                  var prefs = await SharedPreferences.getInstance();
+                  setState(() {
+                    prefs.setBool('isSync', value);
+                    isSyncAutomatically = value;
+                  });
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Sync Automatically',
+                  style: style,
+                ),
               ),
               isPinSet
                   ? ListTile(
@@ -336,9 +364,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       trailing: IconButton(
                         onPressed: () => _navigateToPinSettings(),
-                        icon: const Icon(
+                        icon:  Icon(
                           Icons.chevron_right,
-                          color: Colors.black54,
+                          color: theme.getThemeColor,
                         ),
                       ),
                     )
@@ -350,22 +378,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: style,
                 ),
                 trailing: isSyncing
-                    ? const Padding(
-                        padding: EdgeInsets.only(right: 10.0),
+                    ?  Padding(
+                        padding: const EdgeInsets.only(right: 10.0),
                         child: SizedBox(
                           height: 30,
                           width: 30,
                           child: CircularProgressIndicator(
-                            color: Colors.black54,
+                            color: theme.getThemeColor,
                           ),
                         ),
                       )
                     : isSyncingDone
-                        ? const Padding(
-                            padding: EdgeInsets.only(right: 10.0),
+                        ?  Padding(
+                            padding: const  EdgeInsets.only(right: 10.0),
                             child: Icon(
                               Icons.check,
-                              color: Colors.black,
+                              color: theme.getThemeColor,
                             ),
                           )
                         : IconButton(
@@ -378,7 +406,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       bottomSheet: Container(
-        color: backgroundLite,
+        color: theme.getThemeBackgroundColor,
         height: 50,
         child: Center(
           child: TextButton(

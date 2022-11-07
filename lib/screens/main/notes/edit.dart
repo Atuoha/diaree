@@ -4,10 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../components/note_content.dart';
 import '../../../components/note_title.dart';
 import '../../../components/snackbar.dart';
 import '../../../constants/color.dart';
+import '../../../providers/settings.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
@@ -199,7 +201,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
+    var backgroundColor = Provider.of<SettingsData>(context).getThemeBackgroundColor;
     return Scaffold(
+      backgroundColor: backgroundColor,
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton:
           WidgetsBinding.instance.window.viewInsets.bottom > 0.0

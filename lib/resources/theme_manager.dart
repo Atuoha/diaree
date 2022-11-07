@@ -5,15 +5,20 @@ import 'styles_manager.dart';
 import 'values_manager.dart';
 import 'font_manager.dart';
 
-
 // Light Dark Theme
 ThemeData getLightTheme() {
   return ThemeData(
     primaryColor: primaryColor,
-    primaryColorLight: primaryColor,
-    primaryColorDark: Colors.black,
+    primaryColorLight: Colors.black,
+    primaryColorDark: Colors.white,
     disabledColor: backgroundLite,
     backgroundColor: backgroundLite,
+    scaffoldBackgroundColor: backgroundLite,
+
+    // Bottom sheet theme
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: backgroundLite,
+    ),
 
     // card theme
     cardTheme: CardTheme(
@@ -123,20 +128,26 @@ ThemeData getLightTheme() {
   );
 }
 
-
-
 // Dark Theme Settings
 ThemeData getDarkTheme() {
   return ThemeData(
     primaryColor: primaryColor,
-    primaryColorLight: primaryColor,
-    primaryColorDark: Colors.white,
+    primaryColorLight: Colors.white,
+    primaryColorDark: textBoxDark,
     disabledColor: backgroundLite,
     backgroundColor: backgroundDark,
+    scaffoldBackgroundColor: backgroundDark,
+
+    // Bottom sheet theme
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: backgroundDark,
+    ),
+
+
 
     // card theme
     cardTheme: CardTheme(
-      color: cardsLite,
+      color: cardsDark,
       shadowColor: Colors.grey,
       elevation: AppSize.s4,
       shape: RoundedRectangleBorder(
@@ -170,7 +181,7 @@ ThemeData getDarkTheme() {
 
     // input decoration theme
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: textBoxLite,
+      fillColor: textBoxDark,
       filled: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),

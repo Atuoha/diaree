@@ -31,7 +31,7 @@ class Diaree extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Provider.of<SettingsData>(context);
     return MaterialApp(
-      theme: theme.getThemeData(),
+      theme: theme.getThemeData,
       debugShowCheckedModeBanner: false,
       home: const EntryScreen(),
       routes: routes,

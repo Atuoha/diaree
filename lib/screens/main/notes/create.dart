@@ -4,10 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../components/note_content.dart';
 import '../../../components/note_title.dart';
 import '../../../components/snackbar.dart';
 import '../../../constants/color.dart';
+import '../../../providers/settings.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
@@ -171,7 +173,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton:
           WidgetsBinding.instance.window.viewInsets.bottom > 0.0
@@ -185,7 +189,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   ),
                 )
               : const SizedBox.shrink(),
-      appBar: buildAppBar(),
+      appBar: buildAppBar(theme.getThemeColor),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -200,18 +204,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     vertical: 5,
                   ),
                   height: 83,
-                  color: Colors.white,
+                  color: theme.getTextFieldColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(DateFormat.yMMMMEEEEd().format(date)),
+                      Text(
+                        DateFormat.yMMMMEEEEd().format(date),
+                        style: TextStyle(
+                          color: theme.getThemeColor,
+                        ),
+                      ),
                       NoteTitle(titleController: _titleController),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: formattingWidget(),
+                  child: formattingWidget(theme.getThemeColor),
                 )
               ],
             ),
@@ -222,9 +231,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 horizontal: 30,
                 vertical: 40,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: theme.getTextFieldColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(60),
                   topRight: Radius.circular(60),
                 ),
@@ -243,14 +252,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           )
         ],
       ),
-      bottomSheet: bottomEmotionSelector(size),
+      bottomSheet: bottomEmotionSelector(size, theme.getThemeBackgroundColor),
     );
   }
 
   // EXTRACTED METHODS
 
   // appbar
-  AppBar buildAppBar() {
+  AppBar buildAppBar(Color color) {
     return AppBar(
       automaticallyImplyLeading: false,
       leading: Builder(
@@ -271,19 +280,19 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   Icons.save,
                 ),
               )
-            : const Padding(
-                padding: EdgeInsets.all(10.0),
+            : Padding(
+                padding: const EdgeInsets.all(10.0),
                 child: SizedBox(
                   height: 30,
                   width: 30,
-                  child: CircularProgressIndicator(color: Colors.black),
+                  child: CircularProgressIndicator(color: color),
                 ),
               ),
       ],
       title: Text(
         'Create Entry',
         style: getRegularStyle(
-          color: Colors.black,
+          color: color,
           fontWeight: FontWeightManager.medium,
           fontSize: FontSize.s18,
         ),
@@ -292,18 +301,18 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   // Container for emotions
-  Container bottomEmotionSelector(Size size) {
+  Container bottomEmotionSelector(Size size, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       height: 55,
-      color: backgroundLite,
+      color: color,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             'Mood',
             style: getMediumStyle(
-              color: Colors.black,
+              color: color,
               fontSize: FontSize.s16,
             ),
           ),
@@ -325,7 +334,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   // sized box that hold formatting tools
-  SizedBox formattingWidget() {
+  SizedBox formattingWidget(Color color) {
     return SizedBox(
       height: 70,
       child: Row(
@@ -333,51 +342,58 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         children: [
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.left),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_left,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.center),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_center,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.justify),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_justify,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.right),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_right,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleBold(),
-            child: const Icon(
+            child: Icon(
               Icons.format_bold,
               size: AppSize.s50,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleItalics(),
-            child: const Icon(
+            child: Icon(
               Icons.format_italic,
               size: AppSize.s50,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleUnderline(),
-            child: const Icon(
+            child: Icon(
               Icons.format_underline,
               size: AppSize.s40,
+              color: color,
             ),
           ),
         ],

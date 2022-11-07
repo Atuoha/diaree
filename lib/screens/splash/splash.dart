@@ -1,7 +1,9 @@
 import 'package:diaree/resources/route_manager.dart';
 import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
 import '../../constants/color.dart';
 import '../../models/splash_item.dart';
+import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/string_manager.dart';
@@ -74,7 +76,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: PageView.builder(
@@ -108,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Text(
                 splashItems[currentSplashIndex].subtitle,
                 style: getRegularStyle(
-                  color: Colors.black,
+                  color: theme.getThemeColor,
                   fontWeight: FontWeightManager.normal,
                   fontSize: FontSize.s13,
                 ),
