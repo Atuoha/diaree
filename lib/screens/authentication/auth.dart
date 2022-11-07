@@ -215,7 +215,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           "avatar": "None",
           "pin": "0000",
           'auth-type': 'email',
-          'pin_lock':false,
+          // 'pin_lock':false,
         }).then((value) => loadingFnc());
       }
     } on FirebaseAuthException catch (e) {
@@ -278,7 +278,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           "avatar": googleUser.photoUrl,
           "pin": "0000",
           'auth-type': 'google-auth',
-          'pin_lock':false,
+          // 'pin_lock':false,
         },
       ).then((value) {
         loadingFnc();

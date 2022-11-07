@@ -5,10 +5,12 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import 'package:is_first_run/is_first_run.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../constants/color.dart';
 import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import "dart:async";
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../resources/route_manager.dart';
 
@@ -21,7 +23,20 @@ class EntryScreen extends StatefulWidget {
 
 class _EntryScreenState extends State<EntryScreen> {
   var user = FirebaseAuth.instance.currentUser;
+  bool isPinSet = false;
   var userPin = "";
+
+  void _getIsPinSet() {
+    SharedPreferences.getInstance().then((prefs) {
+      var isLocked = prefs.getBool('isLocked') ?? false;
+
+      if (isLocked) {
+        setState(() {
+          isPinSet = true;
+        });
+      }
+    });
+  }
 
   // load profile details
   Future<void> _loadProfileDetails() async {
@@ -33,6 +48,12 @@ class _EntryScreenState extends State<EntryScreen> {
     setState(() {
       userPin = details['pin'];
     });
+
+    // if(details['pin_lock'] == true){
+    //   setState(() {
+    //     isPinSet = true;
+    //   });
+    // }
   }
 
   _startRun() async {
@@ -50,7 +71,7 @@ class _EntryScreenState extends State<EntryScreen> {
       // checking if user is logged in
       if (user != null) {
         // checking if pin unlock is set
-        if (Provider.of<SettingsData>(context, listen: false).getIsPinSet) {
+        if (isPinSet) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => PinUnlockScreen(
@@ -76,6 +97,13 @@ class _EntryScreenState extends State<EntryScreen> {
     super.initState();
     _startRun();
     _loadProfileDetails();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _getIsPinSet();
   }
 
   @override

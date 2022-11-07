@@ -186,7 +186,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 )
               : const SizedBox.shrink(),
       appBar: buildAppBar(),
-      backgroundColor: backgroundLite,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -63,7 +63,6 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
           ),
         ),
       ),
-      backgroundColor: backgroundLite,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

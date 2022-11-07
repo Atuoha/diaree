@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/helpers/image-uploader.dart';
 import 'package:diaree/providers/settings.dart';
 import 'package:diaree/resources/route_manager.dart';
+import 'package:diaree/resources/theme_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,7 @@ import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 import 'pin_setup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -256,7 +258,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
-      backgroundColor: backgroundLite,
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
@@ -283,21 +284,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   isProfileImageEmpty: isProfileImageEmpty,
                 ),
               ),
-              kSwitchTile(
-                'Dark Mode',
-                isDarkTheme,
-                settingsData!.toggleIsDarkTheme,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isDarkTheme,
+                onChanged: (value) async{
+                  settingsData!.toggleIsDarkTheme();
+                  settingsData!.setTheme(
+                    value ? getLightTheme() : getDarkTheme(),
+                  );
+                  var prefs =  await SharedPreferences.getInstance();
+                  prefs.setBool('isDark', value);
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Dark Mode',
+                  style: style,
+                ),
               ),
               SwitchListTile(
                 activeTrackColor: accentColor,
                 inactiveTrackColor: textBoxLite,
                 activeColor: Colors.white,
                 value: isPinSet,
-                onChanged: (value) {
+                onChanged: (value) async{
                   settingsData!.toggleIsPinSet();
-                  firebase.collection('users').doc(userId).update({
-                    'pin_lock': value,
-                  });
+                  var prefs = await  SharedPreferences.getInstance();
+                  prefs.setBool('isLocked', value);
+                  // firebase.collection('users').doc(userId).update({
+                  //   'pin_lock': value,
+                  // });
                 },
                 contentPadding: EdgeInsets.zero,
                 title: Text(
