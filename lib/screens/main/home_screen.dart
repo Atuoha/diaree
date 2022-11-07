@@ -209,7 +209,6 @@ class HomeScreen extends StatelessWidget {
           width: 110,
         ),
       ),
-      backgroundColor: backgroundLite,
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,

@@ -5,6 +5,7 @@ import 'package:diaree/screens/splash/entry.dart';
 import 'package:firebase_core/firebase_core.dart';
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -12,7 +13,15 @@ Future<void> main() async {
   FirebaseApp app = await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const Diaree());
+  SharedPreferences.getInstance().then((prefs) {
+    var isDark = prefs.getBool('isDark') ?? false;
+    runApp(
+      ChangeNotifierProvider(
+        create: (_) => SettingsData(isDark ? getDarkTheme() : getLightTheme()),
+        child: const Diaree(),
+      ),
+    );
+  });
 }
 
 class Diaree extends StatelessWidget {
@@ -20,14 +29,12 @@ class Diaree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SettingsData(),
-      child: MaterialApp(
-        theme: getAppTheme(),
-        debugShowCheckedModeBanner: false,
-        home: const EntryScreen(),
-        routes: routes,
-      ),
+    var theme = Provider.of<SettingsData>(context);
+    return MaterialApp(
+      theme: theme.getThemeData(),
+      debugShowCheckedModeBanner: false,
+      home: const EntryScreen(),
+      routes: routes,
     );
   }
 }

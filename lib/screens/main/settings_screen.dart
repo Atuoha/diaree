@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/helpers/image-uploader.dart';
 import 'package:diaree/providers/settings.dart';
 import 'package:diaree/resources/route_manager.dart';
+import 'package:diaree/resources/theme_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,7 @@ import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 import 'pin_setup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final firebaseAuth = FirebaseAuth.instance;
+  final firebase = FirebaseFirestore.instance;
   final userId = FirebaseAuth.instance.currentUser!.uid;
   bool isProfileImageEmpty = true;
   String profileImgUrl = AssetManager.avatarSmall;
@@ -51,8 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // load profile details
   Future<void> _loadProfileDetails() async {
-    var details =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    var details = await firebase.collection('users').doc(userId).get();
 
     // checking if avatar is set
     if (details['avatar'] != "None") {
@@ -184,8 +186,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _loadProfileDetails();
   }
 
-
-
   // sync settings
   Future<void> _syncSettings() async {
     if (pickedProfileImage != null) {
@@ -222,7 +222,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else {
       showSnackBar(
-          'There is nothing to sync. Other settings are synced automatically by default',context);
+          'There is nothing to sync. Other settings are synced automatically by default',
+          context);
     }
   }
 
@@ -257,7 +258,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
-      backgroundColor: backgroundLite,
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
@@ -284,15 +284,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   isProfileImageEmpty: isProfileImageEmpty,
                 ),
               ),
-              kSwitchTile(
-                'Dark Mode',
-                isDarkTheme,
-                settingsData!.toggleIsDarkTheme,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isDarkTheme,
+                onChanged: (value) async{
+                  settingsData!.toggleIsDarkTheme();
+                  settingsData!.setTheme(
+                    value ? getLightTheme() : getDarkTheme(),
+                  );
+                  var prefs =  await SharedPreferences.getInstance();
+                  prefs.setBool('isDark', value);
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Dark Mode',
+                  style: style,
+                ),
               ),
-              kSwitchTile(
-                'Biometrics/PIN Lock',
-                isPinSet,
-                settingsData!.toggleIsPinSet,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isPinSet,
+                onChanged: (value) async{
+                  settingsData!.toggleIsPinSet();
+                  var prefs = await  SharedPreferences.getInstance();
+                  prefs.setBool('isLocked', value);
+                  // firebase.collection('users').doc(userId).update({
+                  //   'pin_lock': value,
+                  // });
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Biometrics/PIN Lock',
+                  style: style,
+                ),
               ),
               kSwitchTile(
                 'Sync Automatically',

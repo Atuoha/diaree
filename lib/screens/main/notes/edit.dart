@@ -214,7 +214,6 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 )
               : const SizedBox.shrink(),
       appBar: buildAppBar(),
-      backgroundColor: backgroundLite,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
