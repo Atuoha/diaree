@@ -1,6 +1,8 @@
 import 'package:diaree/resources/route_manager.dart';
 import 'package:diaree/screens/authentication/auth.dart';
 import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
+import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
@@ -29,7 +31,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(
@@ -49,7 +53,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     'Sign in to enable backup and syncing\n for all your diary entries',
                     textAlign: TextAlign.center,
                     style: getRegularStyle(
-                      color: Colors.black,
+                      color: theme.getThemeColor,
                     ),
                   ),
                 ],

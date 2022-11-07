@@ -6,8 +6,10 @@ import 'package:diaree/screens/main/notes/view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
+import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/route_manager.dart';
@@ -53,14 +55,14 @@ class HomeScreen extends StatelessWidget {
     }
 
     // show dialog for delete
-    void showDeleteOptions(DocumentSnapshot note) {
+    void showDeleteOptions(DocumentSnapshot note,Color color) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
-          title: Text('Do you want to delete ${note['title']}?'),
+          title: Text('Do you want to delete ${note['title']}?', style: TextStyle(color:color,),),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,15 +88,15 @@ class HomeScreen extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(
+                icon:  Icon(
                   Icons.cancel,
-                  color: Colors.black,
+                  color: color,
                   size: AppSize.s25,
                 ),
                 label: Text(
                   'Cancel',
                   style: getRegularStyle(
-                    color: Colors.black,
+                    color: color,
                     fontWeight: FontWeightManager.bold,
                   ),
                 ),
@@ -117,7 +119,7 @@ class HomeScreen extends StatelessWidget {
     }
 
     // show options
-    void showOptions(DocumentSnapshot note) {
+    void showOptions(DocumentSnapshot note, Color color) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -130,36 +132,36 @@ class HomeScreen extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: () => viewEntry(note),
-                icon: const Icon(
+                icon:  Icon(
                   Icons.visibility,
-                  color: Colors.black,
+                  color: color,
                   size: AppSize.s25,
                 ),
                 label: Text(
                   'View Entry',
                   style: getRegularStyle(
-                    color: Colors.black,
+                    color: color,
                     fontWeight: FontWeightManager.bold,
                   ),
                 ),
               ),
               TextButton.icon(
                 onPressed: () => editEntry(note),
-                icon: const Icon(
+                icon:  Icon(
                   Icons.edit,
-                  color: Colors.black,
+                  color: color,
                   size: AppSize.s25,
                 ),
                 label: Text(
                   'Edit Entry',
                   style: getRegularStyle(
-                    color: Colors.black,
+                    color: color,
                     fontWeight: FontWeightManager.bold,
                   ),
                 ),
               ),
               TextButton.icon(
-                onPressed: () => showDeleteOptions(note),
+                onPressed: () => showDeleteOptions(note,color),
                 icon: const Icon(
                   Icons.delete,
                   color: primaryColor,
@@ -178,8 +180,9 @@ class HomeScreen extends StatelessWidget {
         ),
       );
     }
-
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         onPressed: () => createNew(),
@@ -205,7 +208,7 @@ class HomeScreen extends StatelessWidget {
         centerTitle: true,
         title: Image.asset(
           AssetManager.logo,
-          color: Colors.black,
+          color: theme.getThemeColor,
           width: 110,
         ),
       ),
@@ -260,7 +263,7 @@ class HomeScreen extends StatelessWidget {
                         child: Text(
                           'An error occurred!',
                           style: getRegularStyle(
-                            color: Colors.black,
+                            color: theme.getThemeColor,
                           ),
                         ),
                       );
@@ -296,7 +299,7 @@ class HomeScreen extends StatelessWidget {
                             child: SizedBox(
                               height: size.height * 0.15,
                               child: GestureDetector(
-                                onTap: () => showOptions(note),
+                                onTap: () => showOptions(note,theme.getThemeColor),
                                 child: Card(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -309,7 +312,7 @@ class HomeScreen extends StatelessWidget {
                                             Text(
                                               note['title'],
                                               style: getBoldStyle(
-                                                  color: Colors.black,
+                                                  color: theme.getThemeColor,
                                                   fontSize: FontSize.s16),
                                             ),
                                             SizedBox(
@@ -320,7 +323,7 @@ class HomeScreen extends StatelessWidget {
                                                 overflow: TextOverflow.ellipsis,
                                                 textAlign: TextAlign.justify,
                                                 style: getRegularStyle(
-                                                  color: Colors.black,
+                                                  color: theme.getThemeColor,
                                                 ),
                                               ),
                                             ),

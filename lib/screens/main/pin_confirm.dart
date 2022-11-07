@@ -3,8 +3,10 @@ import 'package:diaree/resources/styles_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
+import '../../providers/settings.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/values_manager.dart';
 import '../../resources/route_manager.dart';
@@ -76,14 +78,19 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   }
 
   // pin textfield
-  Widget pinTextField(TextEditingController controller, int index) {
+  Widget pinTextField(
+    TextEditingController controller,
+    int index,
+    Color color,
+    Color textBoxColor,
+  ) {
     return Container(
       margin: const EdgeInsets.only(right: 20),
       height: 45,
       width: 45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: textBoxLite,
+        color: textBoxColor,
       ),
       child: TextFormField(
         autofocus: currentPinIndex == index ? true : false,
@@ -93,7 +100,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
         obscureText: true,
         obscuringCharacter: '•',
         style: getBoldStyle(
-          color: Colors.black,
+          color: color,
           fontSize: FontSize.s30,
         ),
         decoration: const InputDecoration(
@@ -116,14 +123,14 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   }
 
   // input button
-  TextButton inputButton(String text) {
+  TextButton inputButton(String text, Color color) {
     return TextButton(
       onPressed: () =>
           currentPinIndex != 4 ? _addValue(text, currentPinIndex) : null,
       child: Text(
         text,
         style: getBoldStyle(
-          color: Colors.black,
+          color: color,
           fontSize: FontSize.s45,
         ),
       ),
@@ -131,12 +138,12 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   }
 
   // input action
-  TextButton inputAction(IconData icon, Function action) {
+  TextButton inputAction(IconData icon, Function action, Color color) {
     return TextButton(
       onPressed: () => action(),
       child: Icon(
         icon,
-        color: Colors.black,
+        color: color,
         size: FontSize.s45,
       ),
     );
@@ -234,7 +241,9 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: Builder(
@@ -249,7 +258,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
         title: Text(
           'Create PIN',
           style: getRegularStyle(
-            color: Colors.black,
+            color: theme.getThemeColor,
             fontWeight: FontWeightManager.medium,
             fontSize: FontSize.s18,
           ),
@@ -279,7 +288,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
                     ? 'Create a new pin'
                     : 'Re-enter your new Pin',
                 style: getMediumStyle(
-                  color: Colors.black,
+                  color: theme.getThemeColor,
                   fontSize: FontSize.s30,
                 ),
               ),
@@ -292,16 +301,36 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
                       !isConfirmPinSection
                           ? 'Please enter your passcode'
                           : 'Please enter your password again',
-                      style: getRegularStyle(color: Colors.black),
+                      style: getRegularStyle(color: theme.getThemeColor),
                     ),
               const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  pinTextField(_firstPin, 0),
-                  pinTextField(_secondPin, 1),
-                  pinTextField(_thirdPin, 2),
-                  pinTextField(_forthPin, 3),
+                  pinTextField(
+                    _firstPin,
+                    0,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _secondPin,
+                    1,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _thirdPin,
+                    2,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _forthPin,
+                    3,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
                 ],
               ),
               Expanded(
@@ -312,18 +341,29 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
                     mainAxisSpacing: 0,
                   ),
                   children: [
-                    inputButton('1'),
-                    inputButton('2'),
-                    inputButton('3'),
-                    inputButton('4'),
-                    inputButton('5'),
-                    inputButton('6'),
-                    inputButton('7'),
-                    inputButton('8'),
-                    inputButton('9'),
-                    inputAction(Icons.fingerprint, _fingerPrint),
-                    inputButton('0'),
-                    inputAction(Icons.cancel_presentation, _removeValue),
+                    inputButton('1', theme.getThemeColor),
+                    inputButton('2', theme.getThemeColor),
+                    inputButton('3', theme.getThemeColor),
+                    inputButton('4', theme.getThemeColor),
+                    inputButton('5', theme.getThemeColor),
+                    inputButton('6', theme.getThemeColor),
+                    inputButton('7', theme.getThemeColor),
+                    inputButton('8', theme.getThemeColor),
+                    inputButton('9', theme.getThemeColor),
+                    inputAction(
+                      Icons.fingerprint,
+                      _fingerPrint,
+                      theme.getThemeColor,
+                    ),
+                    inputButton(
+                      '0',
+                      theme.getThemeColor,
+                    ),
+                    inputAction(
+                      Icons.cancel_presentation,
+                      _removeValue,
+                      theme.getThemeColor,
+                    ),
                   ],
                 ),
               ),

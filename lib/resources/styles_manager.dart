@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'font_manager.dart';
 
+
+
+
+
+
 TextStyle _getTextStyle(
   double fontSize,
   String fontFamily,
@@ -38,7 +43,7 @@ TextStyle getHeadingStyle({fontSize = FontSize.s40}){
   );
 }
 
-TextStyle getHeadingStyle2({fontSize = FontSize.s30}){
+TextStyle getHeadingStyle2({fontSize = FontSize.s30, required color}){
   return  TextStyle(
     fontWeight: FontWeightManager.extraBold,
     fontSize:fontSize,

@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../components/snackbar.dart';
 import '../../constants/color.dart';
+import '../../providers/settings.dart';
 import '../../resources/assets_manager.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/route_manager.dart';
@@ -82,14 +84,15 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   }
 
   // pin textfield
-  Widget pinTextField(TextEditingController controller, int index) {
+  Widget pinTextField(TextEditingController controller, int index, Color color,
+      Color textBoxColor) {
     return Container(
       margin: const EdgeInsets.only(right: 20),
       height: 45,
       width: 45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: textBoxLite,
+        color: textBoxColor,
       ),
       child: TextFormField(
         autofocus: currentPinIndex == index ? true : false,
@@ -99,7 +102,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         obscureText: true,
         obscuringCharacter: '•',
         style: getBoldStyle(
-          color: Colors.black,
+          color: color,
           fontSize: FontSize.s30,
         ),
         decoration: const InputDecoration(
@@ -122,14 +125,14 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   }
 
   // input button
-  TextButton inputButton(String text) {
+  TextButton inputButton(String text, Color color) {
     return TextButton(
       onPressed: () =>
           currentPinIndex != 4 ? _addValue(text, currentPinIndex) : null,
       child: Text(
         text,
         style: getBoldStyle(
-          color: Colors.black,
+          color: color,
           fontSize: FontSize.s45,
         ),
       ),
@@ -137,12 +140,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   }
 
   // input action
-  TextButton inputAction(IconData icon, Function action) {
+  TextButton inputAction(IconData icon, Function action, Color color) {
     return TextButton(
       onPressed: () => action(),
       child: Icon(
         icon,
-        color: Colors.black,
+        color: color,
         size: FontSize.s45,
       ),
     );
@@ -154,7 +157,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   }
 
   // finger print
-  void _fingerPrint() {
+  void _fingerPrint(Color color) {
     // Todo: Implement fingerprint
     showModalBottomSheet(
       context: context,
@@ -167,12 +170,17 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             Text(
               'Use fingerprint',
               style: getBoldStyle(
-                color: Colors.black,
+                color: color,
                 fontSize: FontSize.s16,
               ),
             ),
-            const Text('Touch the fingerprint sensor'),
-            const SizedBox(height:15),
+            Text(
+              'Touch the fingerprint sensor',
+              style: TextStyle(
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 15),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () => _fingerPrintHandler(),
@@ -187,7 +195,6 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       ),
     );
   }
-
 
   // reset pin setup
   void _resetPinSetup() {
@@ -237,8 +244,9 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
   Widget build(BuildContext context) {
     final username = widget.profileDetails!['fullname'];
     final usernameSplit = username.split(' ');
-
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeBackgroundColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         onPressed: () => _savePin(),
@@ -274,7 +282,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               Text(
                 'Welcome, ${usernameSplit[1]}',
                 style: getMediumStyle(
-                  color: Colors.black,
+                  color: theme.getThemeColor,
                   fontSize: FontSize.s30,
                 ),
               ),
@@ -286,20 +294,40 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                   : widget.isPinSetBefore
                       ? Text(
                           'Please enter your passcode',
-                          style: getRegularStyle(color: Colors.black),
+                          style: getRegularStyle(color: theme.getThemeColor),
                         )
                       : Text(
                           'Enter default password: 0000',
-                          style: getRegularStyle(color: Colors.black),
+                          style: getRegularStyle(color: theme.getThemeColor),
                         ),
               const SizedBox(height: 13),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  pinTextField(_firstPin, 0),
-                  pinTextField(_secondPin, 1),
-                  pinTextField(_thirdPin, 2),
-                  pinTextField(_forthPin, 3),
+                  pinTextField(
+                    _firstPin,
+                    0,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _secondPin,
+                    1,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _thirdPin,
+                    2,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
+                  pinTextField(
+                    _forthPin,
+                    3,
+                    theme.getThemeColor,
+                    theme.getTextFieldColor,
+                  ),
                 ],
               ),
               Expanded(
@@ -310,18 +338,26 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
                     mainAxisSpacing: 0,
                   ),
                   children: [
-                    inputButton('1'),
-                    inputButton('2'),
-                    inputButton('3'),
-                    inputButton('4'),
-                    inputButton('5'),
-                    inputButton('6'),
-                    inputButton('7'),
-                    inputButton('8'),
-                    inputButton('9'),
-                    inputAction(Icons.fingerprint, _fingerPrint),
-                    inputButton('0'),
-                    inputAction(Icons.cancel_presentation, _removeValue),
+                    inputButton('1', theme.getThemeColor),
+                    inputButton('2', theme.getThemeColor),
+                    inputButton('3', theme.getThemeColor),
+                    inputButton('4', theme.getThemeColor),
+                    inputButton('5', theme.getThemeColor),
+                    inputButton('6', theme.getThemeColor),
+                    inputButton('7', theme.getThemeColor),
+                    inputButton('8', theme.getThemeColor),
+                    inputButton('9', theme.getThemeColor),
+                    inputAction(
+                      Icons.fingerprint,
+                      _fingerPrint,
+                      theme.getThemeColor,
+                    ),
+                    inputButton('0', theme.getThemeColor),
+                    inputAction(
+                      Icons.cancel_presentation,
+                      _removeValue,
+                      theme.getThemeColor,
+                    ),
                   ],
                 ),
               ),

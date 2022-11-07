@@ -4,7 +4,9 @@ import 'package:diaree/resources/font_manager.dart';
 import 'package:diaree/resources/styles_manager.dart';
 import "package:flutter/material.dart";
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../providers/settings.dart';
 import '../../../resources/values_manager.dart';
 import 'edit.dart';
 
@@ -33,7 +35,9 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
           .then((value) => setState(() {}));
     }
 
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
+      backgroundColor: theme.getThemeColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         onPressed: () => navigateToEdit(),
@@ -57,7 +61,7 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
         title: Text(
           'View Entry',
           style: getRegularStyle(
-            color: Colors.black,
+            color: theme.getThemeColor,
             fontWeight: FontWeightManager.medium,
             fontSize: FontSize.s18,
           ),
