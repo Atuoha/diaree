@@ -32,7 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool isProfileImageEmpty = true;
   String profileImgUrl = AssetManager.avatarSmall;
   File? pickedProfileImage;
-  SettingsData? settingsData;
   bool isDarkTheme = false;
   bool isPinSet = false;
   bool isSyncAutomatically = false;
@@ -43,12 +42,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // loading settings from provider
   void _loadSettings() {
-    var settings = Provider.of<SettingsData>(context);
-    setState(() {
-      settingsData = settings;
-      isDarkTheme = settingsData!.getIsDarkTheme;
-      isPinSet = settingsData!.getIsPinSet;
-      isSyncAutomatically = settingsData!.getIsSyncAutomatically;
+    SharedPreferences.getInstance().then((prefs) {
+      var isDark = prefs.getBool('isDark') ?? false;
+      var isLocked = prefs.getBool('isLocked') ?? false;
+      var isSync = prefs.getBool('isSync') ?? false;
+
+      setState(() {
+        isDarkTheme = isDark;
+        isPinSet = isLocked;
+        isSyncAutomatically = isSync;
+      });
     });
   }
 
@@ -222,8 +225,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
     } else {
       showSnackBar(
-          'There is nothing to sync. Other settings are synced automatically by default',
-          context);
+        'There is nothing to sync. Other settings are synced automatically by default',
+        context,
+      );
     }
   }
 
@@ -236,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    SettingsData settingsData = Provider.of<SettingsData>(context);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -289,12 +293,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 inactiveTrackColor: textBoxLite,
                 activeColor: Colors.white,
                 value: isDarkTheme,
-                onChanged: (value) async{
-                  settingsData!.toggleIsDarkTheme();
-                  settingsData!.setTheme(
+                onChanged: (value) async {
+                  settingsData.setTheme(
                     value ? getLightTheme() : getDarkTheme(),
                   );
-                  var prefs =  await SharedPreferences.getInstance();
+                  var prefs = await SharedPreferences.getInstance();
                   prefs.setBool('isDark', value);
                 },
                 contentPadding: EdgeInsets.zero,
@@ -308,9 +311,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 inactiveTrackColor: textBoxLite,
                 activeColor: Colors.white,
                 value: isPinSet,
-                onChanged: (value) async{
-                  settingsData!.toggleIsPinSet();
-                  var prefs = await  SharedPreferences.getInstance();
+                onChanged: (value) async {
+                  var prefs = await SharedPreferences.getInstance();
                   prefs.setBool('isLocked', value);
                   // firebase.collection('users').doc(userId).update({
                   //   'pin_lock': value,
@@ -322,10 +324,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: style,
                 ),
               ),
-              kSwitchTile(
-                'Sync Automatically',
-                isSyncAutomatically,
-                settingsData!.toggleIsSyncAutomatically,
+              SwitchListTile(
+                activeTrackColor: accentColor,
+                inactiveTrackColor: textBoxLite,
+                activeColor: Colors.white,
+                value: isSyncAutomatically,
+                onChanged: (value) async {
+                  var prefs = await SharedPreferences.getInstance();
+                  prefs.setBool('isSync', value);
+                },
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'Sync Automatically',
+                  style: style,
+                ),
               ),
               isPinSet
                   ? ListTile(
