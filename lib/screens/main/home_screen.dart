@@ -22,8 +22,10 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebase = FirebaseFirestore.instance;
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    Stream<QuerySnapshot> notesStream =
-        firebase.collection('notes').where('uid',isEqualTo:userId).snapshots();
+    Stream<QuerySnapshot> notesStream = firebase
+        .collection('notes')
+        .where('uid', isEqualTo: userId)
+        .snapshots();
 
     Size size = MediaQuery.of(context).size;
 
@@ -55,14 +57,19 @@ class HomeScreen extends StatelessWidget {
     }
 
     // show dialog for delete
-    void showDeleteOptions(DocumentSnapshot note,Color color) {
+    void showDeleteOptions(DocumentSnapshot note, Color color) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
-          title: Text('Do you want to delete ${note['title']}?', style: TextStyle(color:color,),),
+          title: Text(
+            'Do you want to delete ${note['title']}?',
+            style: TextStyle(
+              color: color,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +95,7 @@ class HomeScreen extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
-                icon:  Icon(
+                icon: Icon(
                   Icons.cancel,
                   color: color,
                   size: AppSize.s25,
@@ -132,7 +139,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               TextButton.icon(
                 onPressed: () => viewEntry(note),
-                icon:  Icon(
+                icon: Icon(
                   Icons.visibility,
                   color: color,
                   size: AppSize.s25,
@@ -147,7 +154,7 @@ class HomeScreen extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: () => editEntry(note),
-                icon:  Icon(
+                icon: Icon(
                   Icons.edit,
                   color: color,
                   size: AppSize.s25,
@@ -161,7 +168,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: () => showDeleteOptions(note,color),
+                onPressed: () => showDeleteOptions(note, color),
                 icon: const Icon(
                   Icons.delete,
                   color: primaryColor,
@@ -180,6 +187,7 @@ class HomeScreen extends StatelessWidget {
         ),
       );
     }
+
     var theme = Provider.of<SettingsData>(context);
     return Scaffold(
       backgroundColor: theme.getThemeBackgroundColor,
@@ -220,20 +228,21 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             TextFormField(
+              style: TextStyle(color: theme.getThemeColor),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 13),
-                fillColor: Colors.white,
+                fillColor: theme.getThemeColor2,
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: Colors.white,
+                  borderSide: BorderSide(
+                    color: theme.getThemeColor2,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: Colors.white,
+                  borderSide: BorderSide(
+                    color: theme.getThemeColor2,
                   ),
                 ),
                 hintText: 'Search entries',
@@ -299,7 +308,8 @@ class HomeScreen extends StatelessWidget {
                             child: SizedBox(
                               height: size.height * 0.15,
                               child: GestureDetector(
-                                onTap: () => showOptions(note,theme.getThemeColor),
+                                onTap: () =>
+                                    showOptions(note, theme.getThemeColor),
                                 child: Card(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -332,10 +342,10 @@ class HomeScreen extends StatelessWidget {
                                               DateFormat.yMMMMEEEEd()
                                                   .format(date),
                                               style: getRegularStyle(
-                                                color: greyShade2,
+                                                color: theme.getThemeColor,
                                                 fontWeight:
-                                                    FontWeightManager.medium,
-                                                fontSize: FontSize.s12,
+                                                    FontWeightManager.light,
+                                                fontSize: FontSize.s10,
                                               ),
                                             ),
                                           ],

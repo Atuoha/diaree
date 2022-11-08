@@ -106,8 +106,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     TextEditingController controller,
     bool obscureValue,
     bool isObscured,
+      Color color,
   ) {
     return TextFormField(
+      style: TextStyle(color:color),
       obscureText: obscureValue,
       controller: controller,
       textInputAction:
@@ -314,9 +316,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = Provider.of<SettingsData>(context).getThemeBackgroundColor;
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.getThemeBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(
@@ -331,7 +333,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                     Text(
                       widget.isSignin ? 'Sign in!' : 'Sign up!',
                       textAlign: TextAlign.center,
-                      style: getHeadingStyle(fontSize: FontSize.s30),
+                      style: getHeadingStyle(fontSize: FontSize.s30,color:theme.getThemeColor),
                     ),
                     const SizedBox(height: 40),
                     !isLoading
@@ -347,6 +349,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                         _nameController,
                                         false,
                                         false,
+                                  theme.getThemeColor,
                                       )
                                     : const SizedBox.shrink(),
                                 const SizedBox(height: 10),
@@ -357,6 +360,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                   _emailController,
                                   false,
                                   false,
+                                  theme.getThemeColor,
                                 ),
                                 const SizedBox(height: 10),
                                 kTextField(
@@ -366,6 +370,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                   _passwordController,
                                   isObscure,
                                   true,
+                                  theme.getThemeColor,
                                 ),
                                 const SizedBox(height: 10),
                                 ElevatedButton(
@@ -384,7 +389,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: theme.getThemeColor2,
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 13,
                                       vertical: 8,

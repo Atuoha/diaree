@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../providers/settings.dart';
 import '../resources/assets_manager.dart';
 import '../resources/font_manager.dart';
 import '../resources/styles_manager.dart';
@@ -60,63 +62,65 @@ class _ImageUploaderState extends State<ImageUploader> {
   }
 
   // imagePicker Dialog
-  void _imagePickerDialog() {
+  void _imagePickerDialog(Color color) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton.icon(
-                icon: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.black,
-                ),
-                label: Text(
-                  'Take Photo',
-                  style: getMediumStyle(
-                    color: Colors.black,
-                    fontSize: FontSize.s16,
-                  ),
-                ),
-                onPressed: () {
-                  _selectPhoto(Source.camera);
-                  Navigator.of(context).pop();
-                },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextButton.icon(
+              icon: Icon(
+                Icons.camera_alt,
+                color: color,
               ),
-              TextButton.icon(
-                icon: const Icon(
-                  Icons.photo,
-                  color: Colors.black,
+              label: Text(
+                'Take Photo',
+                style: getMediumStyle(
+                  color: color,
+                  fontSize: FontSize.s16,
                 ),
-                label: Text(
-                  'Choose From Gallery',
-                  style: getMediumStyle(
-                    color: Colors.black,
-                    fontSize: FontSize.s16,
-                  ),
-                ),
-                onPressed: () {
-                  _selectPhoto(Source.gallery);
-                  Navigator.of(context).pop();
-                },
               ),
-            ],
-          )),
+              onPressed: () {
+                _selectPhoto(Source.camera);
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton.icon(
+              icon: Icon(
+                Icons.photo,
+                color: color,
+              ),
+              label: Text(
+                'Choose From Gallery',
+                style: getMediumStyle(
+                  color: color,
+                  fontSize: FontSize.s16,
+                ),
+              ),
+              onPressed: () {
+                _selectPhoto(Source.gallery);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    var theme = Provider.of<SettingsData>(context);
     return GestureDetector(
-      onTap: () => _imagePickerDialog(),
+      onTap: () => _imagePickerDialog(theme.getThemeBackgroundColor),
       child: CircleAvatar(
         radius: widget.isProfileImageEmpty && profileImage == null ? 30 : 23,
-        backgroundColor: Colors.white,
+        backgroundColor: theme.getThemeColor2,
         child: Center(
           child: profileImage == null
               ? widget.isProfileImageEmpty
