@@ -37,7 +37,7 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
 
     var theme = Provider.of<SettingsData>(context);
     return Scaffold(
-      backgroundColor: theme.getThemeColor,
+      backgroundColor: theme.getThemeBackgroundColor,
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         onPressed: () => navigateToEdit(),
@@ -81,14 +81,14 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
                     Text(
                       widget.note['title'],
                       style: getMediumStyle(
-                        color: Colors.black,
+                        color: theme.getThemeColor,
                         fontSize: FontSize.s28,
                       ),
                     ),
                     Text(
                       DateFormat.yMMMMEEEEd().format(date),
                       style: getRegularStyle(
-                        color: Colors.black,
+                        color: theme.getThemeColor,
                       ),
                     )
                   ],
@@ -104,9 +104,9 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
                 horizontal: 30,
                 vertical: 40,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration:  BoxDecoration(
+                color: theme.getThemeColor2,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(60),
                   topRight: Radius.circular(60),
                 ),
@@ -123,7 +123,7 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
                                 ? TextAlign.center
                                 : TextAlign.justify,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: theme.getThemeColor,
                   fontSize: FontSize.s16,
                   fontWeight: widget.note['isBold']
                       ? FontWeightManager.bold

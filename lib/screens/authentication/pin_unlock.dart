@@ -253,7 +253,7 @@ class _PinUnlockScreenState extends State<PinUnlockScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
-                const Icon(Icons.lock, size: AppSize.s30),
+                 Icon(Icons.lock, size: AppSize.s30, color: theme.getThemeColor,),
                 const SizedBox(width: 10),
                 Text(
                   'Enter Unlock Pin',

@@ -13,6 +13,7 @@ class NoteContent extends StatelessWidget {
     required this.isLeftAligned,
     required this.isRightAligned,
     required this.isCentered,
+    required this.color,
   })  : _contentController = contentController,
         super(key: key);
 
@@ -24,6 +25,7 @@ class NoteContent extends StatelessWidget {
   final bool isLeftAligned;
   final bool isRightAligned;
   final bool isCentered;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class NoteContent extends StatelessWidget {
         ),
       ),
       style: TextStyle(
-        color: Colors.black,
+        color: color,
         fontSize: FontSize.s16,
         fontWeight: isBold ? FontWeightManager.bold : FontWeightManager.normal,
         decoration:

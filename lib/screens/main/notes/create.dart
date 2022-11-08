@@ -214,7 +214,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           color: theme.getThemeColor,
                         ),
                       ),
-                      NoteTitle(titleController: _titleController),
+                      NoteTitle(titleController: _titleController, color:theme.getThemeColor,),
                     ],
                   ),
                 ),
@@ -239,6 +239,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
               ),
               child: NoteContent(
+                color:theme.getThemeColor,
                 contentController: _contentController,
                 isBold: isBold,
                 isUnderlined: isUnderlined,
@@ -252,7 +253,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           )
         ],
       ),
-      bottomSheet: bottomEmotionSelector(size, theme.getThemeBackgroundColor),
+      bottomSheet: bottomEmotionSelector(size, theme.getThemeColor, theme.getThemeBackgroundColor),
     );
   }
 
@@ -301,11 +302,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   // Container for emotions
-  Container bottomEmotionSelector(Size size, Color color) {
+  Container bottomEmotionSelector(Size size, Color color, Color bgColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       height: 55,
-      color: color,
+      color: bgColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

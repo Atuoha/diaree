@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> {
               const SizedBox(height: 15),
               Text(
                 splashItems[currentSplashIndex].title,
-                style: getHeadingStyle()
+                style: getHeadingStyle(color:theme.getThemeColor)
               ),
               const SizedBox(height: 10),
               Text(

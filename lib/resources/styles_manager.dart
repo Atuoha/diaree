@@ -34,7 +34,7 @@ TextStyle getRegularStyle({
   );
 }
 
-TextStyle getHeadingStyle({fontSize = FontSize.s40}){
+TextStyle getHeadingStyle({fontSize = FontSize.s40, required color}){
   return  TextStyle(
     fontWeight: FontWeightManager.bold,
     height: 0.8,

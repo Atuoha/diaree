@@ -47,7 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Text(
                     'Welcome!',
                     textAlign: TextAlign.center,
-                    style: getHeadingStyle(fontSize: FontSize.s45),
+                    style: getHeadingStyle(fontSize: FontSize.s45,color:theme.getThemeColor),
                   ),
                   Text(
                     'Sign in to enable backup and syncing\n for all your diary entries',

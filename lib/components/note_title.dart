@@ -7,9 +7,11 @@ class NoteTitle extends StatelessWidget {
   const NoteTitle({
     Key? key,
     required TextEditingController titleController,
+    required this.color,
   }) : _titleController = titleController, super(key: key);
 
   final TextEditingController _titleController;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class NoteTitle extends StatelessWidget {
         ),
       ),
       style: getMediumStyle(
-        color: Colors.black,
+        color: color,
         fontSize: FontSize.s28,
       ),
     );

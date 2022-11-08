@@ -201,9 +201,9 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    var backgroundColor = Provider.of<SettingsData>(context).getThemeBackgroundColor;
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.getThemeBackgroundColor,
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton:
           WidgetsBinding.instance.window.viewInsets.bottom > 0.0
@@ -217,7 +217,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   ),
                 )
               : const SizedBox.shrink(),
-      appBar: buildAppBar(),
+      appBar: buildAppBar(theme.getThemeColor),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -232,18 +232,24 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                     vertical: 5,
                   ),
                   height: 83,
-                  color: Colors.white,
+                  color: theme.getThemeColor2,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(DateFormat.yMMMMEEEEd().format(date)),
-                      NoteTitle(titleController: _titleController),
+                      Text(
+                        DateFormat.yMMMMEEEEd().format(date),
+                        style: TextStyle(color: theme.getThemeColor),
+                      ),
+                      NoteTitle(
+                        titleController: _titleController,
+                        color: theme.getThemeColor,
+                      ),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  child: formattingWidget(),
+                  child: formattingWidget(theme.getThemeColor),
                 )
               ],
             ),
@@ -254,14 +260,15 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 horizontal: 30,
                 vertical: 40,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: theme.getThemeColor2,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(60),
                   topRight: Radius.circular(60),
                 ),
               ),
               child: NoteContent(
+                color: theme.getThemeColor,
                 contentController: _contentController,
                 isBold: isBold,
                 isUnderlined: isUnderlined,
@@ -275,23 +282,25 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
           )
         ],
       ),
-      bottomSheet: bottomEmotionSelector(size),
+      bottomSheet: bottomEmotionSelector(
+        size,
+        theme.getThemeColor,
+        theme.getThemeBackgroundColor,
+      ),
     );
   }
 
   // EXTRACTED METHODS
 
   // appbar
-  AppBar buildAppBar() {
+  AppBar buildAppBar(Color color) {
     return AppBar(
       automaticallyImplyLeading: false,
       leading: Builder(
         builder: (context) => IconButton(
           padding: const EdgeInsets.only(left: 18),
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
+          icon: Icon(Icons.arrow_back, color: color),
         ),
       ),
       actions: [
@@ -299,23 +308,26 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
             ? IconButton(
                 padding: const EdgeInsets.only(right: 18),
                 onPressed: () => saveNote(),
-                icon: const Icon(
+                icon: Icon(
                   Icons.save,
+                  color: color,
                 ),
               )
-            : const Padding(
-                padding: EdgeInsets.all(10.0),
+            : Padding(
+                padding: const EdgeInsets.all(10.0),
                 child: SizedBox(
                   height: 30,
                   width: 30,
-                  child: CircularProgressIndicator(color: Colors.black),
+                  child: CircularProgressIndicator(
+                    color: color,
+                  ),
                 ),
               ),
       ],
       title: Text(
         'Edit Entry',
         style: getRegularStyle(
-          color: Colors.black,
+          color: color,
           fontWeight: FontWeightManager.medium,
           fontSize: FontSize.s18,
         ),
@@ -324,18 +336,18 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   // Container for emotions
-  Container bottomEmotionSelector(Size size) {
+  Container bottomEmotionSelector(Size size, Color color, Color bgColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       height: 55,
-      color: backgroundLite,
+      color: bgColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             'Mood',
             style: getMediumStyle(
-              color: Colors.black,
+              color: color,
               fontSize: FontSize.s16,
             ),
           ),
@@ -357,7 +369,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
   }
 
   // sized box that hold formatting tools
-  SizedBox formattingWidget() {
+  SizedBox formattingWidget(Color color) {
     return SizedBox(
       height: 70,
       child: Row(
@@ -365,51 +377,58 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
         children: [
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.left),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_left,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.center),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_center,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.justify),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_justify,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleTextDirection(TextDirection.right),
-            child: const Icon(
+            child: Icon(
               Icons.format_align_right,
               size: AppSize.s40,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleBold(),
-            child: const Icon(
+            child: Icon(
               Icons.format_bold,
               size: AppSize.s50,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleItalics(),
-            child: const Icon(
+            child: Icon(
               Icons.format_italic,
               size: AppSize.s50,
+              color: color,
             ),
           ),
           GestureDetector(
             onTap: () => toggleUnderline(),
-            child: const Icon(
+            child: Icon(
               Icons.format_underline,
               size: AppSize.s40,
+              color: color,
             ),
           ),
         ],

@@ -72,9 +72,9 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = Provider.of<SettingsData>(context).getThemeBackgroundColor;
+    var theme = Provider.of<SettingsData>(context);
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.getThemeBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 30),
         child: Center(
@@ -89,7 +89,8 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                     Text(
                       'Forgot Password!',
                       textAlign: TextAlign.center,
-                      style: getHeadingStyle(fontSize: FontSize.s30),
+                      style: getHeadingStyle(
+                          fontSize: FontSize.s30, color: theme.getThemeColor),
                     ),
                     const SizedBox(height: 40),
                     !isLoading
@@ -98,6 +99,7 @@ class _ForgottenPasswordScreenState extends State<ForgottenPasswordScreen> {
                             child: Column(
                               children: [
                                 TextFormField(
+                                  style: TextStyle(color: theme.getThemeColor),
                                   controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   validator: (value) {

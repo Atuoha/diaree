@@ -15,6 +15,17 @@ ThemeData getLightTheme() {
     backgroundColor: backgroundLite,
     scaffoldBackgroundColor: backgroundLite,
 
+    // dialog theme
+    dialogTheme: const DialogTheme(
+      backgroundColor: backgroundLite,
+      titleTextStyle: TextStyle(
+        color: Colors.black,
+      ),
+      contentTextStyle: TextStyle(
+        color: Colors.black,
+      ),
+    ),
+
     // Bottom sheet theme
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: backgroundLite,
@@ -138,12 +149,21 @@ ThemeData getDarkTheme() {
     backgroundColor: backgroundDark,
     scaffoldBackgroundColor: backgroundDark,
 
+    // dialog theme
+    dialogTheme: const DialogTheme(
+      backgroundColor: backgroundDark,
+      titleTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+      ),
+    ),
+
     // Bottom sheet theme
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: backgroundDark,
     ),
-
-
 
     // card theme
     cardTheme: CardTheme(
