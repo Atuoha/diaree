@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../resources/font_manager.dart';
 
 class NoteContent extends StatelessWidget {
