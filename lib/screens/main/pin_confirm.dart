@@ -138,7 +138,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
   }
 
   // input action
-  TextButton inputAction(IconData icon, Function action, Color color) {
+  TextButton inputAction(IconData icon, Function action, Color color,) {
     return TextButton(
       onPressed: () => action(),
       child: Icon(
@@ -207,7 +207,7 @@ class _PinConfirmScreenState extends State<PinConfirmScreen> {
 
         // previous pin and new pin does not match
         if (previousEnteredPin != newPinEntry) {
-          showSnackBar('Pin Does not match. Try again!', context);
+          showSnackBar('Pin Does not match. Try again!', context,);
           setState(() {
             isPinInCorrect = true;
             isPinSyncing = false;

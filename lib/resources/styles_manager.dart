@@ -39,7 +39,7 @@ TextStyle getHeadingStyle({fontSize = FontSize.s40, required color}){
     fontWeight: FontWeightManager.bold,
     height: 0.8,
     fontSize:fontSize,
-    color: Colors.black,
+    color: color,
   );
 }
 
@@ -47,7 +47,7 @@ TextStyle getHeadingStyle2({fontSize = FontSize.s30, required color}){
   return  TextStyle(
     fontWeight: FontWeightManager.extraBold,
     fontSize:fontSize,
-    color: Colors.black,
+    color: color,
   );
 }
 
