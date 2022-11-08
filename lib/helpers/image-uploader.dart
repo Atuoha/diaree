@@ -117,7 +117,7 @@ class _ImageUploaderState extends State<ImageUploader> {
   Widget build(BuildContext context) {
     var theme = Provider.of<SettingsData>(context);
     return GestureDetector(
-      onTap: () => _imagePickerDialog(theme.getThemeBackgroundColor),
+      onTap: () => _imagePickerDialog(theme.getThemeColor),
       child: CircleAvatar(
         radius: widget.isProfileImageEmpty && profileImage == null ? 30 : 23,
         backgroundColor: theme.getThemeColor2,
